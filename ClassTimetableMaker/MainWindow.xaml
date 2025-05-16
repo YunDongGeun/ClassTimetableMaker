@@ -1,0 +1,240 @@
+﻿<Window x:Class="ClassTimetableMaker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassTimetableMaker"
+        mc:Ignorable="d"
+        Title="Main" Height="700" Width="450">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 제목 -->
+        <TextBlock Grid.Row="0" Text="시간표 블럭 입력" 
+                   FontSize="24" FontWeight="Bold" 
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <!-- 입력 폼 -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- 교수 성함과 강의실 (같은 라인) -->
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="교수 성함" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtProfessorName" Grid.Row="2" Grid.Column="0" Height="30"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="강의실" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtClassroom" Grid.Row="2" Grid.Column="2" Height="30"/>
+                </Grid>
+
+                <!-- 학년 -->
+                <TextBlock Text="학년" FontWeight="Bold" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                    <RadioButton x:Name="rbGrade1" Content="1학년" Margin="0,0,15,0"/>
+                    <RadioButton x:Name="rbGrade2" Content="2학년" Margin="0,0,15,0"/>
+                    <RadioButton x:Name="rbGrade3" Content="3학년" Margin="0,0,15,0"/>
+                    <RadioButton x:Name="rbGrade4" Content="4학년" Margin="0,0,15,0"/>
+                    <RadioButton x:Name="rbGraduate" Content="대학원" Margin="0,0,15,0"/>
+                </StackPanel>
+
+                <!-- 과목 구분 -->
+                <TextBlock Text="과목 구분" FontWeight="Bold" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                    <RadioButton x:Name="rbMajorRequired" Content="전공 필수" Margin="0,0,15,0"/>
+                    <RadioButton x:Name="rbMajorElective" Content="전공 선택" Margin="0,0,15,0"/>
+                    <RadioButton x:Name="rbGeneralRequired" Content="필수 교과목" Margin="0,0,15,0"/>
+                </StackPanel>
+
+                <!-- 특수 상황 체크박스 -->
+                <Border BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="특수 상황" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <CheckBox x:Name="chkFixedTime" Content="학교 지정 시간에만 강의 가능" 
+                                  Margin="0,0,0,10" Unchecked="chkFixedTime_Unchecked"/>
+                        <CheckBox x:Name="chkAdditionalRestrictions" Content="추가 업무로 인한 시간 제약 있음" 
+                                  Checked="chkAdditionalRestrictions_Checked" Unchecked="chkAdditionalRestrictions_Unchecked"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 교수님 슬롯 (불가능한 시간) -->
+                <StackPanel x:Name="spUnavailableSlots">
+                    <TextBlock Text="교수님 불가능한 시간 (최대 2개)" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 첫 번째 불가능 시간 -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="1. 요일" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbSlot1Day" Grid.Row="2" Grid.Column="0" Height="30">
+                            <ComboBoxItem Content="월요일"/>
+                            <ComboBoxItem Content="화요일"/>
+                            <ComboBoxItem Content="수요일"/>
+                            <ComboBoxItem Content="목요일"/>
+                            <ComboBoxItem Content="금요일"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="시간대" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbSlot1Time" Grid.Row="2" Grid.Column="2" Height="30">
+                            <ComboBoxItem Content="오전"/>
+                            <ComboBoxItem Content="오후"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 두 번째 불가능 시간 -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="2. 요일" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbSlot2Day" Grid.Row="2" Grid.Column="0" Height="30">
+                            <ComboBoxItem Content="월요일"/>
+                            <ComboBoxItem Content="화요일"/>
+                            <ComboBoxItem Content="수요일"/>
+                            <ComboBoxItem Content="목요일"/>
+                            <ComboBoxItem Content="금요일"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="시간대" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbSlot2Time" Grid.Row="2" Grid.Column="2" Height="30">
+                            <ComboBoxItem Content="오전"/>
+                            <ComboBoxItem Content="오후"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+
+                <!-- 추가 불가능 시간 (업무로 인한) -->
+                <StackPanel x:Name="spAdditionalSlots" Visibility="Collapsed">
+                    <TextBlock Text="추가 불가능 시간 (업무로 인한)" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 추가 불가능 시간 1 -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="1. 요일" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbAdditionalSlot1Day" Grid.Row="2" Grid.Column="0" Height="30">
+                            <ComboBoxItem Content="월요일"/>
+                            <ComboBoxItem Content="화요일"/>
+                            <ComboBoxItem Content="수요일"/>
+                            <ComboBoxItem Content="목요일"/>
+                            <ComboBoxItem Content="금요일"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="시간대" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbAdditionalSlot1Time" Grid.Row="2" Grid.Column="2" Height="30">
+                            <ComboBoxItem Content="오전"/>
+                            <ComboBoxItem Content="오후"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 추가 불가능 시간 2 -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="2. 요일" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbAdditionalSlot2Day" Grid.Row="2" Grid.Column="0" Height="30">
+                            <ComboBoxItem Content="월요일"/>
+                            <ComboBoxItem Content="화요일"/>
+                            <ComboBoxItem Content="수요일"/>
+                            <ComboBoxItem Content="목요일"/>
+                            <ComboBoxItem Content="금요일"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="시간대" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbAdditionalSlot2Time" Grid.Row="2" Grid.Column="2" Height="30">
+                            <ComboBoxItem Content="오전"/>
+                            <ComboBoxItem Content="오후"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+
+                <!-- 강의 시간 -->
+                <TextBlock Text="강의 시간" FontWeight="Bold" Margin="0,0,0,5"/>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="시간 1" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbCourseHour1" Height="30" SelectionChanged="cbCourseHour_SelectionChanged">
+                            <ComboBoxItem Content="1"/>
+                            <ComboBoxItem Content="2"/>
+                            <ComboBoxItem Content="3"/>
+                        </ComboBox>
+                        <TextBlock x:Name="txtHour1Display" Margin="0,3,0,0" Foreground="Blue" FontSize="12"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="시간 2" Margin="0,0,0,3"/>
+                        <ComboBox x:Name="cbCourseHour2" Height="30" SelectionChanged="cbCourseHour_SelectionChanged">
+                            <ComboBoxItem Content="0"/>
+                            <ComboBoxItem Content="1"/>
+                            <ComboBoxItem Content="2"/>
+                            <ComboBoxItem Content="3"/>
+                        </ComboBox>
+                        <TextBlock x:Name="txtHour2Display" Margin="0,3,0,0" Foreground="Blue" FontSize="12"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 버튼 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button x:Name="btnCancel" Content="취소" Width="80" Height="35" 
+                    Margin="0,0,10,0" Click="btnCancel_Click"/>
+            <Button x:Name="btnSave" Content="저장" Width="80" Height="35" 
+                    Background="#007ACC" Foreground="White"
+                    Click="btnSave_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
