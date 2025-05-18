@@ -9,11 +9,13 @@ namespace ClassTimetableMaker
     public class TimeTableBlock
     {
         public string ProfessorName { get; set; }
+        public string ClassName { get; set; }
         public string Classroom { get; set; }
         public string Grade { get; set; }
         public string CourseType { get; set; }
         public bool IsFixedTime { get; set; }
         public bool HasAdditionalRestrictions { get; set; }
+        public string FixedTimeSlot { get; set; }
         public string UnavailableSlot1 { get; set; }
         public string UnavailableSlot2 { get; set; }
         public string AdditionalUnavailableSlot1 { get; set; }

@@ -1,0 +1,161 @@
+﻿<Page x:Class="ClassTimetableMaker.Views.QueryPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassTimetableMaker.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="900"
+      Background="White"
+      Title="시간표 조회">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 제목 -->
+        <TextBlock Grid.Row="0" Text="시간표 블럭 조회" 
+                   FontSize="24" FontWeight="Bold" 
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <!-- 검색 영역 -->
+        <Grid Grid.Row="1" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="교수명: " 
+                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox x:Name="txtSearchProfessor" Grid.Column="1" Height="30"/>
+            <Button x:Name="btnSearch" Grid.Column="2" Content="검색" 
+                    Width="80" Height="30" Margin="10,0,0,0"
+                    HorizontalAlignment="Left"
+                    Click="btnSearch_Click"/>
+        </Grid>
+
+        <!-- 데이터 그리드 -->
+        <DataGrid x:Name="dgTimeTableBlocks" Grid.Row="2" 
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True"
+                  AlternatingRowBackground="AliceBlue"
+                  BorderThickness="1" BorderBrush="Gray"
+                  SelectionMode="Single"
+                  SelectionChanged="dgTimeTableBlocks_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="교수명" Binding="{Binding ProfessorName}" Width="100"/>
+                <DataGridTextColumn Header="과목명" Binding="{Binding ClassName}" Width="100"/>
+                <DataGridTextColumn Header="강의실" Binding="{Binding Classroom}" Width="100"/>
+                <DataGridTextColumn Header="학년" Binding="{Binding Grade}" Width="80"/>
+                <DataGridTextColumn Header="과목 구분" Binding="{Binding CourseType}" Width="100"/>
+                <DataGridTemplateColumn Header="세부사항" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="보기" Click="btnViewDetails_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- 세부 정보 영역 -->
+        <Border x:Name="borderDetails" Grid.Row="2" Visibility="Collapsed"
+                Background="White" BorderBrush="Gray" BorderThickness="1"
+                Margin="20,20,20,20" Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 세부 정보 제목 -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                    <TextBlock x:Name="txtDetailTitle" Text="교수명 시간표 세부 정보" 
+                               FontSize="18" FontWeight="Bold"/>
+                    <Button x:Name="btnCloseDetails" Content="닫기" Width="60" Height="25" 
+                            Margin="15,0,0,0" VerticalAlignment="Center" Click="btnCloseDetails_Click"/>
+                </StackPanel>
+
+                <!-- 세부 정보 내용 -->
+                <StackPanel Grid.Row="1" x:Name="spDetailContent">
+                    <!-- 기본 정보 -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="교수명: " FontWeight="Bold" Width="100"/>
+                        <TextBlock x:Name="txtDetailProfessorName" Text=""/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="강의실: " FontWeight="Bold" Width="100"/>
+                        <TextBlock x:Name="txtDetailClassroom" Text=""/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="학년: " FontWeight="Bold" Width="100"/>
+                        <TextBlock x:Name="txtDetailGrade" Text=""/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="과목 구분: " FontWeight="Bold" Width="100"/>
+                        <TextBlock x:Name="txtDetailCourseType" Text=""/>
+                    </StackPanel>
+
+                    <!-- 시간 제약 정보 -->
+                    <TextBlock Text="시간 제약 정보" FontWeight="Bold" Margin="0,10,0,10"/>
+
+                    <StackPanel x:Name="spFixedTimeInfo" Visibility="Collapsed">
+                        <TextBlock Text="학교 지정 시간에만 강의 가능" Foreground="Blue"/>
+                        <StackPanel Orientation="Horizontal" Margin="20,5,0,10">
+                            <TextBlock Text="지정 시간: " FontWeight="Bold" Width="100"/>
+                            <TextBlock x:Name="txtDetailFixedTimeSlot" Text=""/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel x:Name="spUnavailableSlotsInfo" Visibility="Collapsed">
+                        <TextBlock Text="교수님 불가능한 시간" Foreground="Red"/>
+                        <StackPanel Orientation="Horizontal" Margin="20,5,0,5">
+                            <TextBlock Text="시간 1: " FontWeight="Bold" Width="100"/>
+                            <TextBlock x:Name="txtDetailUnavailableSlot1" Text=""/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="20,0,0,10">
+                            <TextBlock Text="시간 2: " FontWeight="Bold" Width="100"/>
+                            <TextBlock x:Name="txtDetailUnavailableSlot2" Text=""/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel x:Name="spAdditionalSlotsInfo" Visibility="Collapsed">
+                        <TextBlock Text="업무로 인한 추가 불가능 시간" Foreground="Purple"/>
+                        <StackPanel Orientation="Horizontal" Margin="20,5,0,5">
+                            <TextBlock Text="시간 1: " FontWeight="Bold" Width="100"/>
+                            <TextBlock x:Name="txtDetailAdditionalSlot1" Text=""/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="20,0,0,10">
+                            <TextBlock Text="시간 2: " FontWeight="Bold" Width="100"/>
+                            <TextBlock x:Name="txtDetailAdditionalSlot2" Text=""/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- 강의 시간 정보 -->
+                    <TextBlock Text="강의 시간 정보" FontWeight="Bold" Margin="0,10,0,10"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBlock Text="시간 1: " FontWeight="Bold" Width="100"/>
+                        <TextBlock x:Name="txtDetailCourseHour1" Text=""/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBlock Text="시간 2: " FontWeight="Bold" Width="100"/>
+                        <TextBlock x:Name="txtDetailCourseHour2" Text=""/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 버튼 -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button x:Name="btnInput" Content="입력 화면으로" Width="110" Height="35" 
+                    Click="btnInput_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>
