@@ -1,0 +1,384 @@
+﻿<Page x:Class="ClassTimetableMaker.Views.TimeTablePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassTimetableMaker.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="800" d:DesignWidth="1200"
+      Background="White"
+      Title="TimeTablePage">
+
+    <Page.Resources>
+        <!-- 점선 스타일 정의 -->
+        <Style x:Key="DashedBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile">
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <GeometryDrawing Brush="Black">
+                                    <GeometryDrawing.Geometry>
+                                        <RectangleGeometry Rect="0,0,4,4"/>
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 시간표 영역 -->
+        <Border Grid.Column="0" Margin="20" BorderBrush="Black" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 제목 -->
+                <Border Grid.Row="0" Background="LightGray" BorderBrush="Black" BorderThickness="0,0,0,1">
+                    <TextBlock Text="통합 시간표" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" 
+                               FontSize="16" 
+                               FontWeight="Bold"/>
+                </Border>
+
+                <!-- 시간표 그리드 -->
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 요일 헤더 -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 빈 셀 (시간 열 위) -->
+                        <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0"/>
+
+                        <!-- 요일 헤더들 -->
+                        <Border Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                            <TextBlock Text="월" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                        </Border>
+                        <Border Grid.Column="2" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                            <TextBlock Text="화" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                        </Border>
+                        <Border Grid.Column="3" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                            <TextBlock Text="수" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                        </Border>
+                        <Border Grid.Column="4" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                            <TextBlock Text="목" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                        </Border>
+                        <Border Grid.Column="5" BorderBrush="Black" BorderThickness="0,0,0,1" Background="#F0F0F0">
+                            <TextBlock Text="금" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- 시간표 본체 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 시간 열 -->
+                            <StackPanel Grid.Column="0">
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,1" Background="#F0F0F0">
+                                    <TextBlock Text="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Height="60" BorderBrush="Black" BorderThickness="0,0,1,0" Background="#F0F0F0">
+                                    <TextBlock Text="9" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- 요일별 시간표 셀들 -->
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- 월요일 -->
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 점선 구분선 -->
+                                    <Border Grid.Column="0" Grid.RowSpan="9" BorderThickness="0,0,1,0" Style="{StaticResource DashedBorderStyle}" Panel.ZIndex="1"/>
+
+                                    <!-- 셀들 -->
+                                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,0" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,0" AllowDrop="True" Background="Transparent"/>
+                                </Grid>
+
+                                <!-- 화요일 -->
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 점선 구분선 -->
+                                    <Border Grid.Column="0" Grid.RowSpan="9" BorderThickness="0,0,1,0" Style="{StaticResource DashedBorderStyle}" Panel.ZIndex="1"/>
+
+                                    <!-- 셀들 -->
+                                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,0" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,0" AllowDrop="True" Background="Transparent"/>
+                                </Grid>
+
+                                <!-- 수요일 -->
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 점선 구분선 -->
+                                    <Border Grid.Column="0" Grid.RowSpan="9" BorderThickness="0,0,1,0" Style="{StaticResource DashedBorderStyle}" Panel.ZIndex="1"/>
+
+                                    <!-- 셀들 -->
+                                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,0" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,0" AllowDrop="True" Background="Transparent"/>
+                                </Grid>
+
+                                <!-- 목요일 -->
+                                <Grid Grid.Column="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 점선 구분선 -->
+                                    <Border Grid.Column="0" Grid.RowSpan="9" BorderThickness="0,0,1,0" Style="{StaticResource DashedBorderStyle}" Panel.ZIndex="1"/>
+
+                                    <!-- 셀들 -->
+                                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,0" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,1,0" AllowDrop="True" Background="Transparent"/>
+                                </Grid>
+
+                                <!-- 금요일 -->
+                                <Grid Grid.Column="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 점선 구분선 -->
+                                    <Border Grid.Column="0" Grid.RowSpan="9" BorderThickness="0,0,1,0" Style="{StaticResource DashedBorderStyle}" Panel.ZIndex="1"/>
+
+                                    <!-- 셀들 -->
+                                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="3" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="4" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="5" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="6" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="7" Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,0,1" AllowDrop="True" Background="Transparent"/>
+                                    <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,0,0" AllowDrop="True" Background="Transparent"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- 오른쪽 영역 -->
+        <StackPanel Grid.Column="1" Margin="20">
+            <!-- + 버튼 -->
+            <Button x:Name="AddButton" 
+                    Content="시간표 추가하기" 
+                    FontSize="18"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Left"
+                    Margin="0,20,0,20"
+                    Click="AddButton_Click"/>
+
+            <!-- 드래그앤드롭 아이템이 들어갈 공간 -->
+            <Border BorderBrush="LightGray" 
+                    BorderThickness="1" 
+                    Height="600" 
+                    Background="#FAFAFA"
+                    Padding="10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="DragItemsPanel">
+                        <!-- 드래그 가능한 아이템들이 여기에 추가됩니다 -->
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Page>

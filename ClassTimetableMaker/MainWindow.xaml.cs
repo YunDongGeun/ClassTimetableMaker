@@ -18,6 +18,7 @@ namespace ClassTimetableMaker
 {
     public partial class MainWindow : Window
     {
+        private TimeTablePage _timeTablePage;
         private InputPage _inputPage;
         private QueryPage _queryPage;
         private readonly DBManager _dbManager;
@@ -28,10 +29,10 @@ namespace ClassTimetableMaker
 
             // DB 매니저 초기화
             string server = ConfigurationManager.AppSettings["DbServer"] ?? "localhost";
-            int port = int.Parse(ConfigurationManager.AppSettings["DbPort"] ?? "3306");
-            string database = ConfigurationManager.AppSettings["DbName"] ?? "timetable_helper";
-            string username = ConfigurationManager.AppSettings["DbUser"] ?? "root";
-            string password = ConfigurationManager.AppSettings["DbPassword"] ?? "password";
+            int port = int.Parse(ConfigurationManager.AppSettings["DbPort"]);
+            string database = ConfigurationManager.AppSettings["DbName"];
+            string username = ConfigurationManager.AppSettings["DbUser"];
+            string password = ConfigurationManager.AppSettings["DbPassword"];
 
             _dbManager = new DBManager(server, port, database, username, password);
 
@@ -39,11 +40,12 @@ namespace ClassTimetableMaker
             TestDatabaseConnection();
 
             // 페이지 초기화
+            _timeTablePage = new TimeTablePage(this);
             _inputPage = new InputPage(this);
             _queryPage = new QueryPage(this);
 
             // 기본 페이지 설정 (입력 페이지)
-            MainFrame.Navigate(_inputPage);
+            MainFrame.Navigate(_timeTablePage);
         }
 
         // 데이터베이스 연결 테스트

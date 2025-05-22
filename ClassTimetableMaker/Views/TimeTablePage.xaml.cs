@@ -15,16 +15,16 @@ using System.Windows.Shapes;
 
 namespace ClassTimetableMaker.Views
 {
-    /// <summary>
-    /// FirstPage.xaml에 대한 상호 작용 논리
-    /// </summary>
-    public partial class FirstPage : Page
+    public partial class TimeTablePage : Page
     {
-        public FirstPage()
+        public TimeTablePage(MainWindow mainWindow)
         {
             InitializeComponent();
         }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
-
-
 }

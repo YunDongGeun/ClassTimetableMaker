@@ -23,7 +23,7 @@ namespace ClassTimetableMaker.Views
             string server = ConfigurationManager.AppSettings["DbServer"] ?? "localhost";
             int port = int.Parse(ConfigurationManager.AppSettings["DbPort"] ?? "3306");
             string database = ConfigurationManager.AppSettings["DbName"] ?? "class_time_table_maker";
-            string username = ConfigurationManager.AppSettings["DbUser"] ?? "root";
+            string username = ConfigurationManager.AppSettings["DbUser"];
             string password = ConfigurationManager.AppSettings["DbPassword"];
 
             // DB 매니저 초기화
