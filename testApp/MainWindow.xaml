@@ -1,0 +1,92 @@
+﻿<Window x:Class="testApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:testApp"
+        mc:Ignorable="d"
+        Title="시간표 관리" Height="450" Width="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 테스트용 버튼 -->
+        <Button Content="테스트 데이터 추가" Width="150" Height="30" Margin="10"
+                Click="AddTestData_Click" />
+
+        <!-- 시간표 격자 -->
+        <Grid Name="ScheduleGrid" Grid.Row="1" ShowGridLines="True">
+
+            <!-- 열 정의 -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 행 정의 -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <!-- Border 셀 생성 -->
+            <!-- 각 Border에 Tag="row,column", DragOver/Drop 이벤트 등록 -->
+            <!-- 예시: 3행 × 5열 -->
+            <!-- Border는 모두 동일한 이벤트를 사용함 -->
+            <!-- Row 0 -->
+            <Border Grid.Row="0" Grid.Column="0" Tag="0,0"
+                    AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver"
+                    BorderBrush="Gray" BorderThickness="1" Background="White" />
+            <Border Grid.Row="0" Grid.Column="1" Tag="0,1" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="0" Grid.Column="2" Tag="0,2" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="0" Grid.Column="3" Tag="0,3" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="0" Grid.Column="4" Tag="0,4" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+
+            <!-- Row 1 -->
+            <Border Grid.Row="1" Grid.Column="0" Tag="1,0" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="1" Grid.Column="1" Tag="1,1" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="1" Grid.Column="2" Tag="1,2" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="1" Grid.Column="3" Tag="1,3" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="1" Grid.Column="4" Tag="1,4" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+
+            <!-- Row 2 -->
+            <Border Grid.Row="2" Grid.Column="0" Tag="2,0" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="2" Grid.Column="1" Tag="2,1" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="2" Grid.Column="2" Tag="2,2" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="2" Grid.Column="3" Tag="2,3" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+            <Border Grid.Row="2" Grid.Column="4" Tag="2,4" AllowDrop="True" PreviewDrop="ScheduleGrid_PreviewDrop" PreviewDragOver="ScheduleGrid_PreviewDragOver" BorderBrush="Gray" BorderThickness="1" Background="White"/>
+        
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding ScheduleBlocks}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left" Value="{Binding Column, Converter={StaticResource GridColumnToCanvasLeftConverter}}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Row, Converter={StaticResource GridRowToCanvasTopConverter}}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Width="100" Height="50" Background="LightBlue"
+                    BorderBrush="Black" BorderThickness="1"
+                    MouseLeftButtonDown="Block_MouseLeftButtonDown">
+                        <TextBlock Text="{Binding Course.Name}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </Grid>
+</Window>

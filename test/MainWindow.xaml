@@ -1,0 +1,45 @@
+﻿<Window x:Class="test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:test"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <ListBox Name="sourceListBox" 
+                     PreviewMouseLeftButtonDown="SourceListBox_PreviewMouseLeftButtonDown"
+                     MouseMove="SourceListBox_MouseMove" 
+                     Margin="10">
+                <ListBoxItem>항목 1</ListBoxItem>
+                <ListBoxItem>항목 2</ListBoxItem>
+                <ListBoxItem>항목 3</ListBoxItem>
+            </ListBox>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="드래그 앤 드롭 대상 리스트박스" 
+                       FontWeight="Bold" 
+                       Margin="10" 
+                       HorizontalAlignment="Center"/>
+            <ListBox Name="targetListBox" 
+                     AllowDrop="True" 
+                     Drop="TargetListBox_Drop" 
+                     DragEnter="TargetListBox_DragEnter" 
+                     DragOver="TargetListBox_DragOver">
+            </ListBox>
+        </Grid>
+
+    </Grid>
+</Window>
