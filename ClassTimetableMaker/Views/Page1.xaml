@@ -4,25 +4,20 @@
      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      mc:Ignorable="d"
-     d:DesignHeight="800" d:DesignWidth="900"
+     d:DesignHeight="1000" d:DesignWidth="1400"
      Background="White"
      Title="TimetablePage">
 
    <Grid>
-       <Grid.RowDefinitions>
-           <RowDefinition Height="Auto" />
-           <!-- Header -->
-           <RowDefinition Height="*" />
-           <!-- Main Content -->
-           <RowDefinition Height="Auto" />
-           <!-- Footer/Status -->
-       </Grid.RowDefinitions>
-
-       <!-- Header -->
-       <TextBlock Text="강의 시간표 작성 도우미" FontSize="24" FontWeight="Bold"
-                  HorizontalAlignment="Center" Margin="10" />
-
-       <!-- Main Layout -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Header -->
+            <RowDefinition Height="*" />
+            <!-- Main Content -->
+            <RowDefinition Height="Auto" />
+            <!-- Footer/Status -->
+        </Grid.RowDefinitions>
+        <!-- Main Layout -->
        <Grid Grid.Row="1">
            <Grid.ColumnDefinitions>
                <ColumnDefinition Width="300" />
@@ -31,33 +26,39 @@
                <!-- 시간표 -->
            </Grid.ColumnDefinitions>
 
-           <!-- 좌측: 과목 생성 및 리스트 -->
-           <StackPanel Grid.Column="0" Background="#f5f5f5" Margin="10">
-               <TextBlock Text="과목 목록" FontWeight="Bold" Margin="0,0,0,10" />
-               <ListBox x:Name="LectureListBox" Height="500"
-                        AllowDrop="True"
-                        PreviewMouseLeftButtonDown="LectureListBox_PreviewMouseLeftButtonDown" />
-               <Button Content="과목 추가" Margin="0,10,0,0" Click="AddLectureButton_Click" />
-           </StackPanel>
+            <!-- 좌측: 과목 생성 및 리스트 -->
+            <StackPanel Grid.Column="0" Background="#f5f5f5" Margin="10">
+                <TextBlock Text="과목 목록" FontWeight="Bold" Margin="0,0,0,10" />
 
-           <!-- 우측: 시간표 격자 -->
+                <!-- 과목 추가 버튼 -->
+                <Button Content="과목 추가" Margin="0,0,0,10" Click="AddLectureButton_Click" />
+
+                <!-- 드래그 가능한 과목 리스트 -->
+                <ScrollViewer Height="500" VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="LectureListPanel">
+                        <!-- 과목들이 동적으로 추가됩니다 -->
+                    </StackPanel>
+                </ScrollViewer>
+            </StackPanel>
+
+            <!-- 우측: 시간표 격자 -->
            <Grid Grid.Column="1" x:Name="TimetableGrid" Margin="10">
                <Grid.RowDefinitions>
                    <RowDefinition Height="30" />
                    <!-- 요일 헤더 -->
                    <!-- 1~9교시 -->
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
-                   <RowDefinition Height="60" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
                </Grid.RowDefinitions>
                <Grid.ColumnDefinitions>
-                   <ColumnDefinition Width="50" />
+                   <ColumnDefinition Width="40" />
                    <!-- 교시 번호 -->
                    <ColumnDefinition Width="*" />
                    <!-- 월 -->
@@ -72,54 +73,296 @@
                </Grid.ColumnDefinitions>
 
                <!-- 요일 헤더 -->
-               <TextBlock Grid.Row="0" Grid.Column="1" Text="월" HorizontalAlignment="Center" />
-               <TextBlock Grid.Row="0" Grid.Column="2" Text="화" HorizontalAlignment="Center" />
-               <TextBlock Grid.Row="0" Grid.Column="3" Text="수" HorizontalAlignment="Center" />
-               <TextBlock Grid.Row="0" Grid.Column="4" Text="목" HorizontalAlignment="Center" />
-               <TextBlock Grid.Row="0" Grid.Column="5" Text="금" HorizontalAlignment="Center" />
+                <Border Grid.Row="0" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Padding="5">
+                    <TextBlock Text="월" HorizontalAlignment="Center" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="2" BorderBrush="Black" BorderThickness="1" Padding="5">
+                    <TextBlock Text="화" HorizontalAlignment="Center" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="3" BorderBrush="Black" BorderThickness="1" Padding="5">
+                    <TextBlock Text="수" HorizontalAlignment="Center" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="4" BorderBrush="Black" BorderThickness="1" Padding="5">
+                    <TextBlock Text="목" HorizontalAlignment="Center" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="5" BorderBrush="Black" BorderThickness="1" Padding="5">
+                    <TextBlock Text="금" HorizontalAlignment="Center" />
+                </Border>
+                <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White"/> 
 
-               <!-- 교시 번호와 드롭존 셀 -->
-               <ItemsControl Grid.Row="1" Grid.ColumnSpan="6">
-                   <ItemsControl.ItemsSource>
-                       <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                           <sys:String>1</sys:String>
-                           <sys:String>2</sys:String>
-                           <sys:String>3</sys:String>
-                           <sys:String>4</sys:String>
-                           <sys:String>5</sys:String>
-                           <sys:String>6</sys:String>
-                           <sys:String>7</sys:String>
-                           <sys:String>8</sys:String>
-                           <sys:String>9</sys:String>
-                       </x:Array>
-                   </ItemsControl.ItemsSource>
-                   <ItemsControl.ItemTemplate>
-                       <DataTemplate>
-                           <Grid>
-                               <Grid.ColumnDefinitions>
-                                   <ColumnDefinition Width="50" />
-                                   <ColumnDefinition Width="*" />
-                                   <ColumnDefinition Width="*" />
-                                   <ColumnDefinition Width="*" />
-                                   <ColumnDefinition Width="*" />
-                                   <ColumnDefinition Width="*" />
-                               </Grid.ColumnDefinitions>
-                               <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                               <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="0.5" Background="White"
-                                       AllowDrop="True" Drop="Cell_Drop" />
-                               <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="0.5" Background="White"
-                                       AllowDrop="True" Drop="Cell_Drop" />
-                               <Border Grid.Column="3" BorderBrush="Gray" BorderThickness="0.5" Background="White"
-                                       AllowDrop="True" Drop="Cell_Drop" />
-                               <Border Grid.Column="4" BorderBrush="Gray" BorderThickness="0.5" Background="White"
-                                       AllowDrop="True" Drop="Cell_Drop" />
-                               <Border Grid.Column="5" BorderBrush="Gray" BorderThickness="0.5" Background="White"
-                                       AllowDrop="True" Drop="Cell_Drop" />
-                           </Grid>
-                       </DataTemplate>
-                   </ItemsControl.ItemTemplate>
-               </ItemsControl>
-           </Grid>
+
+                <!-- 교시 번호와 드롭존 셀 -->
+                <!-- 1교시 -->
+                <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock  Text="1" HorizontalAlignment="Center" 
+                                VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="1,1" x:Name="Cell_1_1">
+                    <Grid x:Name="CellContent_1_1" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="1,2" x:Name="Cell_1_2">
+                    <Grid x:Name="CellContent_1_2" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="1,3" x:Name="Cell_1_3">
+                    <Grid x:Name="CellContent_1_3" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="1,4" x:Name="Cell_1_4">
+                    <Grid x:Name="CellContent_1_4" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="1,5" x:Name="Cell_1_5">
+                    <Grid x:Name="CellContent_1_5" />
+                </Border>
+
+                <!-- 2교시 -->
+                <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="2,1" x:Name="Cell_2_1">
+                    <Grid x:Name="CellContent_2_1" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="2,2" x:Name="Cell_2_2">
+                    <Grid x:Name="CellContent_2_2" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="2,3" x:Name="Cell_2_3">
+                    <Grid x:Name="CellContent_2_3" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="2,4" x:Name="Cell_2_4">
+                    <Grid x:Name="CellContent_2_4" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="2,5" x:Name="Cell_2_5">
+                    <Grid x:Name="CellContent_2_5" />
+                </Border>
+
+                <!-- 3교시 -->
+                <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="3,1" x:Name="Cell_3_1">
+                    <Grid x:Name="CellContent_3_1" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="3,2" x:Name="Cell_3_2">
+                    <Grid x:Name="CellContent_3_2" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="3,3" x:Name="Cell_3_3">
+                    <Grid x:Name="CellContent_3_3" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="3,4" x:Name="Cell_3_4">
+                    <Grid x:Name="CellContent_3_4" />
+                </Border>
+                <Border Grid.Row="3" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="3,5" x:Name="Cell_3_5">
+                    <Grid x:Name="CellContent_3_5" />
+                </Border>
+
+                <!-- 4교시 -->
+                <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="4" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="4,1" x:Name="Cell_4_1">
+                    <Grid x:Name="CellContent_4_1" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="4,2" x:Name="Cell_4_2">
+                    <Grid x:Name="CellContent_4_2" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="4,3" x:Name="Cell_4_3">
+                    <Grid x:Name="CellContent_4_3" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="4,4" x:Name="Cell_4_4">
+                    <Grid x:Name="CellContent_4_4" />
+                </Border>
+                <Border Grid.Row="4" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="4,5" x:Name="Cell_4_5">
+                    <Grid x:Name="CellContent_4_5" />
+                </Border>
+
+                <!-- 5교시 -->
+                <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="5" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="5" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="5,1" x:Name="Cell_5_1">
+                    <Grid x:Name="CellContent_5_1" />
+                </Border>
+                <Border Grid.Row="5" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="5,2" x:Name="Cell_5_2">
+                    <Grid x:Name="CellContent_5_2" />
+                </Border>
+                <Border Grid.Row="5" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="5,3" x:Name="Cell_5_3">
+                    <Grid x:Name="CellContent_5_3" />
+                </Border>
+                <Border Grid.Row="5" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="5,4" x:Name="Cell_5_4">
+                    <Grid x:Name="CellContent_5_4" />
+                </Border>
+                <Border Grid.Row="5" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="5,5" x:Name="Cell_5_5">
+                    <Grid x:Name="CellContent_5_5" />
+                </Border>
+
+                <!-- 6교시 -->
+                <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="6" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="6" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="6,1" x:Name="Cell_6_1">
+                    <Grid x:Name="CellContent_6_1" />
+                </Border>
+                <Border Grid.Row="6" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="6,2" x:Name="Cell_6_2">
+                    <Grid x:Name="CellContent_6_2" />
+                </Border>
+                <Border Grid.Row="6" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="6,3" x:Name="Cell_6_3">
+                    <Grid x:Name="CellContent_6_3" />
+                </Border>
+                <Border Grid.Row="6" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="6,4" x:Name="Cell_6_4">
+                    <Grid x:Name="CellContent_6_4" />
+                </Border>
+                <Border Grid.Row="6" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="6,5" x:Name="Cell_6_5">
+                    <Grid x:Name="CellContent_6_5" />
+                </Border>
+
+                <!-- 7교시 -->
+                <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="7" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="7" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="7,1" x:Name="Cell_7_1">
+                    <Grid x:Name="CellContent_7_1" />
+                </Border>
+                <Border Grid.Row="7" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="7,2" x:Name="Cell_7_2">
+                    <Grid x:Name="CellContent_7_2" />
+                </Border>
+                <Border Grid.Row="7" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="7,3" x:Name="Cell_7_3">
+                    <Grid x:Name="CellContent_7_3" />
+                </Border>
+                <Border Grid.Row="7" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="7,4" x:Name="Cell_7_4">
+                    <Grid x:Name="CellContent_7_4" />
+                </Border>
+                <Border Grid.Row="7" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="7,5" x:Name="Cell_7_5">
+                    <Grid x:Name="CellContent_7_5" />
+                </Border>
+
+                <!-- 8교시 -->
+                <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="8" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="8" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="8,1" x:Name="Cell_8_1">
+                    <Grid x:Name="CellContent_8_1" />
+                </Border>
+                <Border Grid.Row="8" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="8,2" x:Name="Cell_8_2">
+                    <Grid x:Name="CellContent_8_2" />
+                </Border>
+                <Border Grid.Row="8" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="8,3" x:Name="Cell_8_3">
+                    <Grid x:Name="CellContent_8_3" />
+                </Border>
+                <Border Grid.Row="8" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="8,4" x:Name="Cell_8_4">
+                    <Grid x:Name="CellContent_8_4" />
+                </Border>
+                <Border Grid.Row="8" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="8,5" x:Name="Cell_8_5">
+                    <Grid x:Name="CellContent_8_5" />
+                </Border>
+
+                <!-- 9교시 -->
+                <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White">
+                    <TextBlock Text="9" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                </Border>
+                <Border Grid.Row="9" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="9,1" x:Name="Cell_9_1">
+                    <Grid x:Name="CellContent_9_1" />
+                </Border>
+                <Border Grid.Row="9" Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="9,2" x:Name="Cell_9_2">
+                    <Grid x:Name="CellContent_9_2" />
+                </Border>
+                <Border Grid.Row="9" Grid.Column="3" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="9,3" x:Name="Cell_9_3">
+                    <Grid x:Name="CellContent_9_3" />
+                </Border>
+                <Border Grid.Row="9" Grid.Column="4" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="9,4" x:Name="Cell_9_4">
+                    <Grid x:Name="CellContent_9_4" />
+                </Border>
+                <Border Grid.Row="9" Grid.Column="5" BorderBrush="Gray" BorderThickness="1" Background="White" 
+                        AllowDrop="True" Drop="Cell_Drop" DragEnter="Cell_DragEnter" DragLeave="Cell_DragLeave"
+                        Tag="9,5" x:Name="Cell_9_5">
+                    <Grid x:Name="CellContent_9_5" />
+                </Border>
+            </Grid>
        </Grid>
 
        <!-- 하단 상태 영역 -->

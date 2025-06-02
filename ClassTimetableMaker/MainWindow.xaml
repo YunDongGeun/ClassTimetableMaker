@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClassTimetableMaker"
         mc:Ignorable="d"
-        Title="교수님 시간표 작성 도우미" Height="700" Width="1000">
+        Title="교수님 시간표 작성 도우미" Height="1000" Width="1400">
     <Grid>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </Grid>

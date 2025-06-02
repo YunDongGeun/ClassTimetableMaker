@@ -21,6 +21,7 @@ namespace ClassTimetableMaker
         private TimeTablePage _timeTablePage;
         private InputPage _inputPage;
         private QueryPage _queryPage;
+        private Page1 _page1;
         private readonly DBManager _dbManager;
 
         public MainWindow()
@@ -43,9 +44,10 @@ namespace ClassTimetableMaker
             _timeTablePage = new TimeTablePage(this);
             _inputPage = new InputPage(this);
             _queryPage = new QueryPage(this);
+            _page1 = new Page1(this);
 
             // 기본 페이지 설정 (입력 페이지)
-            MainFrame.Navigate(_timeTablePage);
+            MainFrame.Navigate(_page1);
         }
 
         // 데이터베이스 연결 테스트
@@ -79,6 +81,11 @@ namespace ClassTimetableMaker
         public void NavigateToInputPage()
         {
             MainFrame.Navigate(_inputPage);
+        }
+
+        public void NavigateToMainPage()
+        {
+            MainFrame.Navigate(_page1);
         }
 
         // 조회 페이지로 이동

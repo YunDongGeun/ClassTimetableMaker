@@ -8,6 +8,7 @@ namespace ClassTimetableMaker
 {
     public class TimeTableBlock
     {
+        public int Id { get; set; } // 데이터베이스에서 자동 생성되는 ID
         public string ProfessorName { get; set; }
         public string ClassName { get; set; }
         public string Classroom { get; set; }
