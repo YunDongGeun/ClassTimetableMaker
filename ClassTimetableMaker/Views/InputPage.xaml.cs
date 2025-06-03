@@ -103,16 +103,14 @@ namespace ClassTimetableMaker.Views
                 ClassName = txtClassName.Text.Trim(),
                 Classroom = txtClassroom.Text.Trim(),
                 Grade = GetSelectedGrade(),
-                CourseType = GetSelectedCourseType(),
                 IsFixedTime = chkFixedTime.IsChecked.Value,
-                HasAdditionalRestrictions = chkAdditionalRestrictions.IsChecked.Value,
                 FixedTimeSlot = chkFixedTime.IsChecked.Value ? GetUnavailableSlot(cbFixedTimeDay, cbFixedTimeSlot) : null,
                 UnavailableSlot1 = GetUnavailableSlot(cbSlot1Day, cbSlot1Time),
                 UnavailableSlot2 = GetUnavailableSlot(cbSlot2Day, cbSlot2Time),
                 AdditionalUnavailableSlot1 = GetUnavailableSlot(cbAdditionalSlot1Day, cbAdditionalSlot1Time),
                 AdditionalUnavailableSlot2 = GetUnavailableSlot(cbAdditionalSlot2Day, cbAdditionalSlot2Time),
-                CourseHour1 = GetSelectedCourseHour(cbCourseHour1),
-                CourseHour2 = GetSelectedCourseHour(cbCourseHour2)
+                LectureHours_1 = GetSelectedCourseHour(cbCourseHour1),
+                LectureHours_2 = GetSelectedCourseHour(cbCourseHour2)
             };
 
             try

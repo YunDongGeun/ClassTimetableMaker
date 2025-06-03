@@ -126,11 +126,10 @@ namespace ClassTimetableMaker.Views
             txtDetailProfessorName.Text = block.ProfessorName;
             txtDetailClassroom.Text = block.Classroom;
             txtDetailGrade.Text = block.Grade;
-            txtDetailCourseType.Text = block.CourseType;
 
             // 강의 시간 정보
-            txtDetailCourseHour1.Text = $"{block.CourseHour1}시간";
-            txtDetailCourseHour2.Text = $"{block.CourseHour2}시간";
+            txtDetailCourseHour1.Text = $"{block.LectureHours_1}시간";
+            txtDetailCourseHour2.Text = $"{block.LectureHours_2}시간";
 
             // 시간 제약 정보 설정
 
@@ -158,19 +157,6 @@ namespace ClassTimetableMaker.Views
                 {
                     spUnavailableSlotsInfo.Visibility = Visibility.Collapsed;
                 }
-            }
-
-            // 추가 불가능 시간
-            if (block.HasAdditionalRestrictions &&
-                (!string.IsNullOrEmpty(block.AdditionalUnavailableSlot1) || !string.IsNullOrEmpty(block.AdditionalUnavailableSlot2)))
-            {
-                spAdditionalSlotsInfo.Visibility = Visibility.Visible;
-                txtDetailAdditionalSlot1.Text = block.AdditionalUnavailableSlot1 ?? "없음";
-                txtDetailAdditionalSlot2.Text = block.AdditionalUnavailableSlot2 ?? "없음";
-            }
-            else
-            {
-                spAdditionalSlotsInfo.Visibility = Visibility.Collapsed;
             }
 
             // 세부 정보 영역 표시, 데이터 그리드 숨김
