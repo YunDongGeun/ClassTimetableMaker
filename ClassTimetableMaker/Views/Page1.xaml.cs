@@ -1411,11 +1411,4 @@ namespace ClassTimetableMaker.Views
             IsFromTimetable = isFromTimetable;
         }
     }
-
-    // 원래 위치 정보 클래스 (더 이상 사용하지 않지만 호환성을 위해 유지)
-    public class OriginalPosition
-    {
-        public Panel Parent { get; set; }
-        public Border Item { get; set; }
-    }
 }
