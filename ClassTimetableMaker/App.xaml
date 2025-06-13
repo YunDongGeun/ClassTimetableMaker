@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:ClassTimetableMaker"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Application.Resources>
 </Application>

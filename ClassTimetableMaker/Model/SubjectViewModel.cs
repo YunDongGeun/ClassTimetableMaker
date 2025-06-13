@@ -20,6 +20,8 @@ namespace ClassTimetableMaker.Model
         public int SectionCount { get; set; } = 1;
         public bool IsContinuous { get; set; } = false;
         public int ContinuousHours { get; set; } = 1;
+        public bool IsSaved { get; set; } = false;
+        public bool IsTemp { get; set; } = true;
 
         // UI 표시용 프로퍼티들
         public string SectionNames => string.Join(", ", GetSectionNamesList());

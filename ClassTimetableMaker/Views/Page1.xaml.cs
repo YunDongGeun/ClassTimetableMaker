@@ -50,7 +50,8 @@ namespace ClassTimetableMaker.Views
             InitializeDynamicTimetable();
 
             // 강의 목록 로드
-            LoadLectures();
+            // 강의 목록 로드 (async)
+            Loaded += async (s, e) => await LoadLectures();
         }
 
         // 동적 시간표 초기화
@@ -303,17 +304,22 @@ namespace ClassTimetableMaker.Views
         }
 
         // DB에서 강의 목록 로드
-        private async void LoadLectures()
+        private async Task LoadLectures()
         {
             try
             {
+                UpdateStatusText("강의 목록을 불러오는 중...");
+
                 availableLectures = await _dbManager.GetTimeTableBlocksAsync();
                 ProcessLecturesForDisplay();
                 PopulateLectureList();
                 PlaceFixedTimeLectures(); // 고정 시간 강의 자동 배치
+
+                UpdateStatusText($"강의 목록 로딩 완료 - 총 {availableLectures.Count}개 강의");
             }
             catch (Exception ex)
             {
+                UpdateStatusText($"강의 목록 로딩 실패: {ex.Message}");
                 MessageBox.Show($"강의 목록 로드 중 오류가 발생했습니다: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -1379,6 +1385,39 @@ namespace ClassTimetableMaker.Views
         private void AddLectureButton_Click(object sender, RoutedEventArgs e)
         {
             _mainWindow.NavigateToSubjectInputPage();
+        }
+
+        private void UpdateStatusText(string message)
+        {
+            if (StatusText != null)
+            {
+                StatusText.Text = message;
+            }
+        }
+
+
+        public async void RefreshData()
+        {
+            try
+            {
+                // 상태 텍스트 업데이트
+                UpdateStatusText("데이터를 새로고침하는 중...");
+
+                // 강의 목록 다시 로드
+                await LoadLectures();
+
+                UpdateStatusText("데이터 새로고침 완료");
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusText($"데이터 새로고침 실패: {ex.Message}");
+                MessageBox.Show($"데이터 새로고침 중 오류가 발생했습니다: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadLectures();
         }
     }
 

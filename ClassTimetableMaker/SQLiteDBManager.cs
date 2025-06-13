@@ -563,29 +563,6 @@ namespace ClassTimetableMaker
             }
         }
 
-        public async Task<bool> DeleteSubjectAsync(int id)
-        {
-            try
-            {
-                using var connection = new SQLiteConnection(_connectionString);
-                await connection.OpenAsync();
-
-                // CASCADE DELETE가 설정되어 있어서 관련 데이터들이 자동으로 삭제됨
-                string sql = "DELETE FROM subjects WHERE id = @id";
-                using var command = new SQLiteCommand(sql, connection);
-                command.Parameters.AddWithValue("@id", id);
-
-                int result = await command.ExecuteNonQueryAsync();
-                return result > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DB 오류: {ex.Message}");
-                throw;
-            }
-        }
-
-
         public async Task<bool> IsProfessorNameExistsAsync(string name)
         {
             try
@@ -644,6 +621,266 @@ namespace ClassTimetableMaker
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteProfessorAsync(int id)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                // 관련된 데이터가 있는지 먼저 확인
+                string checkSql = @"
+            SELECT COUNT(*) FROM subject_professors WHERE professor_id = @id
+            UNION ALL
+            SELECT COUNT(*) FROM timetable_assignments WHERE professor_id = @id";
+
+                using var checkCommand = new SQLiteCommand(checkSql, connection);
+                checkCommand.Parameters.AddWithValue("@id", id);
+
+                using var reader = await checkCommand.ExecuteReaderAsync();
+                int relatedCount = 0;
+                while (await reader.ReadAsync())
+                {
+                    relatedCount += reader.GetInt32(0);
+                }
+                reader.Close();
+
+                if (relatedCount > 0)
+                {
+                    throw new InvalidOperationException($"이 교수는 {relatedCount}개의 관련 데이터가 있어 삭제할 수 없습니다.");
+                }
+
+                // 교수 삭제
+                string deleteSql = "DELETE FROM professors WHERE id = @id";
+                using var deleteCommand = new SQLiteCommand(deleteSql, connection);
+                deleteCommand.Parameters.AddWithValue("@id", id);
+
+                int result = await deleteCommand.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ========================================
+        // 강의실 삭제 메서드
+        // ========================================
+
+        public async Task<bool> DeleteClassroomAsync(int id)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                // 관련된 시간표 배치가 있는지 확인
+                string checkSql = "SELECT COUNT(*) FROM timetable_assignments WHERE classroom_id = @id";
+                using var checkCommand = new SQLiteCommand(checkSql, connection);
+                checkCommand.Parameters.AddWithValue("@id", id);
+
+                int relatedCount = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+
+                if (relatedCount > 0)
+                {
+                    throw new InvalidOperationException($"이 강의실은 {relatedCount}개의 시간표에서 사용 중이어서 삭제할 수 없습니다.");
+                }
+
+                // 강의실 삭제
+                string deleteSql = "DELETE FROM classrooms WHERE id = @id";
+                using var deleteCommand = new SQLiteCommand(deleteSql, connection);
+                deleteCommand.Parameters.AddWithValue("@id", id);
+
+                int result = await deleteCommand.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ========================================
+        // 교과목 삭제 메서드 (이미 있지만 개선)
+        // ========================================
+
+        public async Task<bool> DeleteSubjectAsync(int id)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                // 관련된 시간표 배치가 있는지 확인
+                string checkSql = "SELECT COUNT(*) FROM timetable_assignments WHERE subject_id = @id";
+                using var checkCommand = new SQLiteCommand(checkSql, connection);
+                checkCommand.Parameters.AddWithValue("@id", id);
+
+                int relatedCount = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+
+                if (relatedCount > 0)
+                {
+                    throw new InvalidOperationException($"이 교과목은 {relatedCount}개의 시간표에 배치되어 있어서 삭제할 수 없습니다.");
+                }
+
+                // CASCADE DELETE가 설정되어 있어서 관련 데이터들이 자동으로 삭제됨
+                string sql = "DELETE FROM subjects WHERE id = @id";
+                using var command = new SQLiteCommand(sql, connection);
+                command.Parameters.AddWithValue("@id", id);
+
+                int result = await command.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ========================================
+        // 교수 정보 업데이트 메서드
+        // ========================================
+
+        public async Task<bool> UpdateProfessorAsync(Professor professor)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                string sql = @"
+            UPDATE professors 
+            SET name = @name, 
+                preferred_time_slots = @preferredTimeSlots, 
+                unavailable_time_slots = @unavailableTimeSlots,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = @id";
+
+                using var command = new SQLiteCommand(sql, connection);
+                command.Parameters.AddWithValue("@id", professor.Id);
+                command.Parameters.AddWithValue("@name", professor.Name);
+                command.Parameters.AddWithValue("@preferredTimeSlots", professor.PreferredTimeSlots ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@unavailableTimeSlots", professor.UnavailableTimeSlots ?? (object)DBNull.Value);
+
+                int result = await command.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ========================================
+        // 강의실 정보 업데이트 메서드
+        // ========================================
+
+        public async Task<bool> UpdateClassroomAsync(Classroom classroom)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                string sql = @"
+            UPDATE classrooms 
+            SET name = @name,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = @id";
+
+                using var command = new SQLiteCommand(sql, connection);
+                command.Parameters.AddWithValue("@id", classroom.Id);
+                command.Parameters.AddWithValue("@name", classroom.Name);
+
+                int result = await command.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        // ========================================
+        // 교과목 정보 업데이트 메서드
+        // ========================================
+
+        public async Task<bool> UpdateSubjectAsync(Subject subject, List<int> professorIds)
+        {
+            using var connection = new SQLiteConnection(_connectionString);
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // 1. 교과목 정보 업데이트
+                string subjectSql = @"
+            UPDATE subjects 
+            SET name = @name, 
+                grade = @grade, 
+                course_type = @courseType, 
+                lecture_hours_1 = @lectureHours1, 
+                lecture_hours_2 = @lectureHours2,
+                section_count = @sectionCount, 
+                is_continuous = @isContinuous, 
+                continuous_hours = @continuousHours,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = @id";
+
+                using var subjectCommand = new SQLiteCommand(subjectSql, connection, transaction);
+                subjectCommand.Parameters.AddWithValue("@id", subject.Id);
+                subjectCommand.Parameters.AddWithValue("@name", subject.Name);
+                subjectCommand.Parameters.AddWithValue("@grade", subject.Grade);
+                subjectCommand.Parameters.AddWithValue("@courseType", subject.CourseType ?? (object)DBNull.Value);
+                subjectCommand.Parameters.AddWithValue("@lectureHours1", subject.LectureHours1);
+                subjectCommand.Parameters.AddWithValue("@lectureHours2", subject.LectureHours2);
+                subjectCommand.Parameters.AddWithValue("@sectionCount", subject.SectionCount);
+                subjectCommand.Parameters.AddWithValue("@isContinuous", subject.IsContinuous);
+                subjectCommand.Parameters.AddWithValue("@continuousHours", subject.ContinuousHours);
+
+                await subjectCommand.ExecuteNonQueryAsync();
+
+                // 2. 기존 교수-교과목 매핑 삭제
+                string deleteMappingSql = "DELETE FROM subject_professors WHERE subject_id = @subjectId";
+                using var deleteMappingCommand = new SQLiteCommand(deleteMappingSql, connection, transaction);
+                deleteMappingCommand.Parameters.AddWithValue("@subjectId", subject.Id);
+                await deleteMappingCommand.ExecuteNonQueryAsync();
+
+                // 3. 새로운 교수-교과목 매핑 추가
+                if (professorIds != null && professorIds.Count > 0)
+                {
+                    string insertMappingSql = @"
+                INSERT INTO subject_professors (subject_id, professor_id, is_primary)
+                VALUES (@subjectId, @professorId, @isPrimary)";
+
+                    for (int i = 0; i < professorIds.Count; i++)
+                    {
+                        using var insertMappingCommand = new SQLiteCommand(insertMappingSql, connection, transaction);
+                        insertMappingCommand.Parameters.AddWithValue("@subjectId", subject.Id);
+                        insertMappingCommand.Parameters.AddWithValue("@professorId", professorIds[i]);
+                        insertMappingCommand.Parameters.AddWithValue("@isPrimary", i == 0); // 첫 번째 교수가 주담당
+
+                        await insertMappingCommand.ExecuteNonQueryAsync();
+                    }
+                }
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
                 Console.WriteLine($"DB 오류: {ex.Message}");
                 throw;
             }

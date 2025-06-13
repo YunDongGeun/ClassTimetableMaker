@@ -18,6 +18,9 @@ namespace ClassTimetableMaker.Views
         private ObservableCollection<Professor> _tempProfessors;
         private Professor _selectedProfessor; // 수정 중인 교수
 
+        private bool _isShowingDBData = false;
+        private List<Professor> _dbProfessors = new List<Professor>();
+
         public ProfessorInputPage(MainWindow mainWindow)
         {
             InitializeComponent();
@@ -134,8 +137,7 @@ namespace ClassTimetableMaker.Views
             }
         }
 
-        // 전체 저장 버튼 클릭
-        private async void btnSaveAll_Click(object sender, RoutedEventArgs e)
+        private async void SaveAll()
         {
             if (_tempProfessors.Count == 0)
             {
@@ -255,13 +257,10 @@ namespace ClassTimetableMaker.Views
             }
         }
 
-        // 교수 목록 선택 변경
-        private void listProfessors_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // 전체 저장 버튼 클릭
+        private void btnSaveAll_Click(object sender, RoutedEventArgs e)
         {
-            var selectedProfessor = listProfessors.SelectedItem as Professor;
-
-            btnEditProfessor.IsEnabled = selectedProfessor != null;
-            btnDeleteProfessor.IsEnabled = selectedProfessor != null;
+            SaveAll();
         }
 
         // 교수 수정 버튼 클릭
@@ -581,6 +580,276 @@ namespace ClassTimetableMaker.Views
             _mainWindow.NavigateToMainPage();
         }
 
+        // 데이터 소스 변경 이벤트
+        private async void DataSource_Changed(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded) return;
+
+            if (rbShowTemp.IsChecked == true)
+            {
+                _isShowingDBData = false;
+                listProfessors.ItemsSource = _tempProfessors;
+                txtDataSourceStatus.Text = " | 임시 목록";
+                UpdateProfessorCount();
+            }
+            else if (rbShowDB.IsChecked == true)
+            {
+                _isShowingDBData = true;
+                await LoadFromDatabase();
+                txtDataSourceStatus.Text = " | 데이터베이스";
+            }
+
+            UpdateSelectionStatus();
+        }
+
+        // DB에서 불러오기
+        private async void btnLoadFromDB_Click(object sender, RoutedEventArgs e)
+        {
+            rbShowDB.IsChecked = true;
+            await LoadFromDatabase();
+        }
+
+        // 데이터베이스에서 교수 목록 로드
+        private async Task LoadFromDatabase()
+        {
+            try
+            {
+                txtDataSourceStatus.Text = " | DB 로딩 중...";
+                btnLoadFromDB.IsEnabled = false;
+
+                _dbProfessors = await _dbManager.GetProfessorsAsync();
+
+                // DB 데이터에 표시용 속성 추가
+                var dbViewModels = _dbProfessors.Select(p => new ProfessorViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    PreferredTimeSlots = string.IsNullOrEmpty(p.PreferredTimeSlots) ? "없음" : p.PreferredTimeSlots,
+                    UnavailableTimeSlots = string.IsNullOrEmpty(p.UnavailableTimeSlots) ? "없음" : p.UnavailableTimeSlots,
+                    IsSaved = true,
+                    IsTemp = false,
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt
+                }).ToList();
+
+                listProfessors.ItemsSource = dbViewModels;
+                txtProfessorCount.Text = $"{_dbProfessors.Count}명";
+                txtDataSourceStatus.Text = " | 데이터베이스";
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"데이터베이스에서 불러오기 실패: {ex.Message}", "오류", MessageBoxImage.Error);
+                txtDataSourceStatus.Text = " | 로딩 실패";
+            }
+            finally
+            {
+                btnLoadFromDB.IsEnabled = true;
+            }
+        }
+
+        // 데이터 새로고침
+        private async void btnRefreshData_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isShowingDBData)
+            {
+                await LoadFromDatabase();
+            }
+            else
+            {
+                UpdateProfessorCount();
+            }
+            UpdateSelectionStatus();
+        }
+
+        // 목록 비우기
+        private void btnClearList_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isShowingDBData)
+            {
+                ShowMessage("데이터베이스 모드에서는 목록을 비울 수 없습니다.", "알림", MessageBoxImage.Information);
+                return;
+            }
+
+            if (_tempProfessors.Count == 0)
+            {
+                ShowMessage("비울 목록이 없습니다.", "알림", MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"임시 목록의 {_tempProfessors.Count}개 항목을 모두 삭제하시겠습니까?\n※ 이 작업은 되돌릴 수 없습니다.",
+                "목록 비우기 확인",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _tempProfessors.Clear();
+                UpdateProfessorCount();
+                UpdateSelectionStatus();
+                ShowMessage("임시 목록이 비워졌습니다.", "완료", MessageBoxImage.Information);
+            }
+        }
+
+        // 선택 삭제
+        private async void btnDeleteSelected_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = listProfessors.SelectedItems.Cast<object>().ToList();
+
+            if (selectedItems.Count == 0)
+            {
+                ShowMessage("삭제할 항목을 선택해주세요.", "알림", MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"선택한 {selectedItems.Count}개의 교수를 삭제하시겠습니까?\n※ 이 작업은 되돌릴 수 없습니다.",
+                "선택 삭제 확인",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                btnDeleteSelected.IsEnabled = false;
+                int successCount = 0;
+                int failCount = 0;
+                var failedNames = new List<string>();
+
+                foreach (var item in selectedItems)
+                {
+                    try
+                    {
+                        if (_isShowingDBData)
+                        {
+                            // DB에서 삭제
+                            if (item is ProfessorViewModel viewModel)
+                            {
+                                bool deleted = await _dbManager.DeleteProfessorAsync(viewModel.Id);
+                                if (deleted)
+                                {
+                                    successCount++;
+                                }
+                                else
+                                {
+                                    failCount++;
+                                    failedNames.Add(viewModel.Name);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // 임시 목록에서 삭제
+                            if (item is Professor professor)
+                            {
+                                _tempProfessors.Remove(professor);
+                                successCount++;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        failCount++;
+                        if (item is ProfessorViewModel vm)
+                            failedNames.Add($"{vm.Name} ({ex.Message})");
+                        else if (item is Professor prof)
+                            failedNames.Add($"{prof.Name} ({ex.Message})");
+                    }
+                }
+
+                // 결과 메시지
+                string resultMessage = $"삭제 완료!\n\n✅ 성공: {successCount}개";
+                if (failCount > 0)
+                {
+                    resultMessage += $"\n❌ 실패: {failCount}개";
+                    if (failedNames.Count > 0)
+                        resultMessage += $"\n\n실패한 항목:\n{string.Join("\n", failedNames)}";
+                }
+
+                ShowMessage(resultMessage, "삭제 결과", MessageBoxImage.Information);
+
+                // 데이터 새로고침
+                if (_isShowingDBData)
+                {
+                    await LoadFromDatabase();
+                }
+                else
+                {
+                    UpdateProfessorCount();
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"선택 삭제 중 오류: {ex.Message}", "오류", MessageBoxImage.Error);
+            }
+            finally
+            {
+                btnDeleteSelected.IsEnabled = true;
+                UpdateSelectionStatus();
+            }
+        }
+
+        // 선택 상태 업데이트
+        private void UpdateSelectionStatus()
+        {
+            int selectedCount = listProfessors.SelectedItems.Count;
+
+            if (selectedCount == 0)
+            {
+                txtSelectionStatus.Text = "선택된 교수가 없습니다";
+                btnEditProfessor.IsEnabled = false;
+                btnDeleteProfessor.IsEnabled = false;
+                btnDeleteSelected.IsEnabled = false;
+            }
+            else if (selectedCount == 1)
+            {
+                var selectedItem = listProfessors.SelectedItem;
+                string name = "";
+
+                if (selectedItem is Professor prof)
+                    name = prof.Name;
+                else if (selectedItem is ProfessorViewModel vm)
+                    name = vm.Name;
+
+                txtSelectionStatus.Text = $"선택됨: {name}";
+                btnEditProfessor.IsEnabled = true;
+                btnDeleteProfessor.IsEnabled = true;
+                btnDeleteSelected.IsEnabled = true;
+            }
+            else
+            {
+                txtSelectionStatus.Text = $"{selectedCount}개 교수가 선택됨";
+                btnEditProfessor.IsEnabled = false; // 다중 선택 시 수정 불가
+                btnDeleteProfessor.IsEnabled = false;
+                btnDeleteSelected.IsEnabled = true;
+            }
+        }
+
+        // 교수 목록 선택 변경 (기존 메서드 수정)
+        private void listProfessors_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateSelectionStatus();
+        }
+
+        // ========================================
+        // 교수 뷰모델 클래스 추가
+        // ========================================
+
+        public class ProfessorViewModel
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string PreferredTimeSlots { get; set; }
+            public string UnavailableTimeSlots { get; set; }
+            public bool IsSaved { get; set; } = false;
+            public bool IsTemp { get; set; } = true;
+            public DateTime CreatedAt { get; set; }
+            public DateTime UpdatedAt { get; set; }
+        }
+
         // 입력 폼 초기화
         private void ClearInputForm()
         {
@@ -618,5 +887,83 @@ namespace ClassTimetableMaker.Views
         {
             MessageBox.Show(message, title, MessageBoxButton.OK, icon);
         }
+
+        private void btnGoToSubject_Click(object sender, RoutedEventArgs e)
+        {
+            if (_tempProfessors.Count > 0)
+            {
+                var result = MessageBox.Show(
+                    $"입력 중인 {_tempProfessors.Count}개의 교수 정보가 있습니다.\n\n" +
+                    "다음 중 하나를 선택하세요:\n" +
+                    "• 예: 먼저 저장하고 교과목 정보 입력 페이지로 이동\n" +
+                    "• 아니오: 저장하지 않고 이동 (데이터 손실)\n" +
+                    "• 취소: 현재 페이지에 머물기",
+                    "페이지 이동 옵션",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question
+                );
+
+                if (result == MessageBoxResult.Cancel) return;
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    // 먼저 저장 시도
+                    SaveAll();
+
+                    // 저장 후에도 데이터가 남아있다면 저장 실패 (사용자가 취소했거나 오류 발생)
+                    if (_tempProfessors.Count > 0)
+                    {
+                        return; // 페이지 이동 취소
+                    }
+                }
+            }
+
+            _mainWindow.NavigateToSubjectInputPage(); // 수정: 교과목 정보 입력 페이지로 이동
+        }
+
+        private void btnGoToClassroom_Click(object sender, RoutedEventArgs e)
+        {
+            if (_tempProfessors.Count > 0)
+            {
+                var result = MessageBox.Show(
+                    $"입력 중인 {_tempProfessors.Count}개의 교수 정보가 있습니다.\n\n" +
+                    "다음 중 하나를 선택하세요:\n" +
+                    "• 예: 먼저 저장하고 강의실 정보 입력 페이지로 이동\n" +
+                    "• 아니오: 저장하지 않고 이동 (데이터 손실)\n" +
+                    "• 취소: 현재 페이지에 머물기",
+                    "페이지 이동 옵션",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question
+                );
+
+                if (result == MessageBoxResult.Cancel) return;
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    // 먼저 저장 시도
+                    SaveAll();
+
+                    // 저장 후에도 데이터가 남아있다면 저장 실패 (사용자가 취소했거나 오류 발생)
+                    if (_tempProfessors.Count > 0)
+                    {
+                        return; // 페이지 이동 취소
+                    }
+                }
+            }
+
+            _mainWindow.NavigateToClassroomInputPage(); // 수정: 강의실 정보 입력 페이지로 이동
+        }
+    }
+
+    public class ProfessorViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string PreferredTimeSlots { get; set; }
+        public string UnavailableTimeSlots { get; set; }
+        public bool IsSaved { get; set; } = false;
+        public bool IsTemp { get; set; } = true;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

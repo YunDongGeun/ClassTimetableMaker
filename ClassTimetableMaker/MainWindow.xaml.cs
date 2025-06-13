@@ -74,9 +74,22 @@ namespace ClassTimetableMaker
             }
         }
 
-        // ========================================
-        // 페이지 네비게이션 메서드들 (중복 제거 후)
-        // ========================================
+        // 메인 시간표 페이지로 이동 (데이터 새로고침 포함)
+        public void NavigateToMainPage()
+        {
+            // 페이지가 이미 생성되어 있다면 데이터 새로고침
+            if (_page1 != null)
+            {
+                _page1.RefreshData();
+            }
+            else
+            {
+                // 페이지가 없다면 새로 생성
+                _page1 = new Page1(this);
+            }
+
+            MainFrame.Navigate(_page1);
+        }
 
         // 교수 입력 페이지로 이동 (새 교수 추가)
         public void NavigateToProfessorInputPage()
@@ -84,13 +97,6 @@ namespace ClassTimetableMaker
             _professorInputPage = new ProfessorInputPage(this);
             MainFrame.Navigate(_professorInputPage);
         }
-
-        //// 교수 입력 페이지로 이동 (교수 정보 수정)
-        //public void NavigateToProfessorInputPage(Professor professorToEdit)
-        //{
-        //    _professorInputPage = new ProfessorInputPage(this, professorToEdit);
-        //    MainFrame.Navigate(_professorInputPage);
-        //}
 
         // 강의실 입력 페이지로 이동
         public void NavigateToClassroomInputPage()
@@ -113,18 +119,34 @@ namespace ClassTimetableMaker
             MainFrame.Navigate(_subjectInputPage);
         }
 
-        // 메인 시간표 페이지로 이동
-        public void NavigateToMainPage()
-        {
-            MainFrame.Navigate(_page1);
-        }
-
         // 조회 페이지로 이동
         public void NavigateToQueryPage()
         {
             // 조회 페이지가 매번 새로 로드되도록 처리
             _queryPage = new QueryPage(this);
             MainFrame.Navigate(_queryPage);
+        }
+
+        public async void RefreshAllPagesData()
+        {
+            try
+            {
+                // 메인 페이지 새로고침
+                _page1?.RefreshData();
+
+                // 조회 페이지가 있다면 새로고침
+                if (_queryPage != null)
+                {
+                    // QueryPage에 새로고침 메서드가 있다면 호출
+                    // _queryPage.RefreshData();
+                }
+
+                // 다른 입력 페이지들은 새로 생성될 때 최신 데이터를 로드하므로 별도 처리 불필요
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"데이터 새로고침 중 오류: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

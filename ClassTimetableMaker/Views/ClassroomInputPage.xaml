@@ -62,76 +62,6 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <!-- 2. 강의실 속성 --><!--
-                        <GroupBox Header="🎯 강의실 속성" Padding="20" BorderBrush="#27AE60" BorderThickness="1" Margin="0,0,0,20">
-                            <GroupBox.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="14" Foreground="#27AE60"/>
-                                </DataTemplate>
-                            </GroupBox.HeaderTemplate>
-                            <StackPanel>
-                                <TextBlock Text="강의실 유형을 선택하세요" FontSize="12" Margin="0,0,0,10" Foreground="#34495E"/>
-
-                                <WrapPanel Orientation="Horizontal">
-                                    <CheckBox x:Name="chkGeneralClassroom" Content="일반 강의실" Margin="0,0,15,8" FontSize="11"/>
-                                    <CheckBox x:Name="chkLabroom" Content="실습실" Margin="0,0,15,8" FontSize="11"/>
-                                    <CheckBox x:Name="chkComputerRoom" Content="컴퓨터실" Margin="0,0,15,8" FontSize="11"/>
-                                    <CheckBox x:Name="chkSeminarRoom" Content="세미나실" Margin="0,0,15,8" FontSize="11"/>
-                                    <CheckBox x:Name="chkAuditorium" Content="대강당" Margin="0,0,15,8" FontSize="11"/>
-                                </WrapPanel>
-
-                                <TextBlock Text="특수 시설 (선택사항)" FontWeight="Bold" FontSize="12" Margin="0,15,0,8" Foreground="#34495E"/>
-
-                                <WrapPanel Orientation="Horizontal">
-                                    <CheckBox x:Name="chkProjector" Content="프로젝터" Margin="0,0,15,5" FontSize="10"/>
-                                    <CheckBox x:Name="chkWhiteboard" Content="화이트보드" Margin="0,0,15,5" FontSize="10"/>
-                                    <CheckBox x:Name="chkAircon" Content="에어컨" Margin="0,0,15,5" FontSize="10"/>
-                                    <CheckBox x:Name="chkMicrophone" Content="마이크 시설" Margin="0,0,15,5" FontSize="10"/>
-                                </WrapPanel>
-                            </StackPanel>
-                        </GroupBox>
-
-                        --><!-- 3. 추가 정보 --><!--
-                        <GroupBox Header="📝 추가 정보" Padding="20" BorderBrush="#9B59B6" BorderThickness="1" Margin="0,0,0,20">
-                            <GroupBox.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="14" Foreground="#9B59B6"/>
-                                </DataTemplate>
-                            </GroupBox.HeaderTemplate>
-                            <StackPanel>
-                                <TextBlock Text="건물/층수 정보" FontWeight="Bold" FontSize="12" Margin="0,0,0,5" Foreground="#2C3E50"/>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="15"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="건물명" FontSize="11" Margin="0,0,0,3"/>
-                                        <TextBox x:Name="txtBuilding" Height="30" FontSize="11"
-                                                 BorderBrush="#BDC3C7" BorderThickness="1" Padding="6"
-                                                 ToolTip="예: 공학관, 인문관"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="층수" FontSize="11" Margin="0,0,0,3"/>
-                                        <TextBox x:Name="txtFloor" Height="30" FontSize="11"
-                                                 BorderBrush="#BDC3C7" BorderThickness="1" Padding="6"
-                                                 ToolTip="예: 1층, 2층, B1"
-                                                 MaxLength="10"/>
-                                    </StackPanel>
-                                </Grid>
-
-                                <TextBlock Text="비고 사항" FontWeight="Bold" FontSize="12" Margin="0,15,0,5" Foreground="#2C3E50"/>
-                                <TextBox x:Name="txtNotes" Height="60" FontSize="11"
-                                         BorderBrush="#BDC3C7" BorderThickness="1" Padding="6"
-                                         TextWrapping="Wrap" AcceptsReturn="True"
-                                         VerticalScrollBarVisibility="Auto"
-                                         ToolTip="강의실에 대한 추가 정보나 주의사항을 입력하세요"/>
-                            </StackPanel>
-                        </GroupBox>-->
-
                         <!-- 추가 버튼 -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
                             <Border CornerRadius="5"><Button x:Name="btnAddClassroom" Content="➕ 추가" Width="90" Height="40" Margin="10,0"
@@ -148,9 +78,11 @@
 
             <!-- 우측: 입력된 강의실 목록 -->
             <Border Grid.Column="1" BorderBrush="#34495E" BorderThickness="2" CornerRadius="10" 
-                    Margin="7,0,0,0" Background="#FAFAFA">
-                <Grid Margin="20">
+        Margin="7,0,0,0" Background="#FAFAFA">
+                <Grid Margin="15">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -160,58 +92,317 @@
                     <!-- 헤더 -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
                         <TextBlock Text="🏢" FontSize="20" Margin="0,0,8,0"/>
-                        <TextBlock Text="입력된 강의실 목록" FontWeight="Bold" FontSize="16" 
-                                   Foreground="#34495E" VerticalAlignment="Center"/>
+                        <TextBlock Text="강의실 목록 관리" FontWeight="Bold" FontSize="16" 
+                       Foreground="#34495E" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- 통계 정보 -->
-                    <Border Grid.Row="1" Background="#E8F4FD" BorderBrush="#3498DB" BorderThickness="1" 
-                            CornerRadius="5" Padding="15" Margin="0,0,0,15">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="총 강의실 수: " FontSize="14" FontWeight="Bold"/>
-                            <TextBlock x:Name="txtClassroomCount" Text="0개" FontSize="14" FontWeight="Bold" Foreground="#3498DB"/>
-                            <TextBlock Text=" | 저장 대기 중" FontSize="12" Foreground="#E67E22" Margin="10,0,0,0"/>
+                    <!-- 데이터 소스 선택 -->
+                    <Border Grid.Row="1" Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" 
+                CornerRadius="5" Padding="12" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="📊 데이터 소스" FontWeight="Bold" FontSize="12" Margin="0,0,0,8" Foreground="#3498DB"/>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="rbShowTempClassrooms" Content="임시 입력 목록" IsChecked="True" 
+                                Margin="0,0,15,0" FontSize="11" Checked="ClassroomDataSource_Changed"/>
+                                <RadioButton x:Name="rbShowDBClassrooms" Content="데이터베이스" 
+                                Margin="0,0,15,0" FontSize="11" Checked="ClassroomDataSource_Changed"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 
-                    <!-- 강의실 리스트 -->
-                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <!-- 검색 및 필터 -->
+                    <Border Grid.Row="2" Background="#E8F4FD" BorderBrush="#3498DB" BorderThickness="1" 
+                CornerRadius="5" Padding="10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="🔍 강의실 검색" FontWeight="Bold" FontSize="11" Margin="0,0,0,5" Foreground="#3498DB"/>
+                                <TextBox x:Name="txtSearchClassroom" Height="25" FontSize="10" 
+                             BorderBrush="#3498DB" BorderThickness="1" Padding="5"
+                             TextChanged="txtSearchClassroom_TextChanged"
+                             ToolTip="강의실명으로 검색 (예: DB134, 공학관)"/>
+                            </StackPanel>
+
+                            <Button Grid.Column="2" x:Name="btnClearClassroomFilter" Content="🔄" Height="25" 
+                        Background="Transparent" BorderThickness="0" FontSize="12"
+                        Click="btnClearClassroomFilter_Click" ToolTip="검색 초기화"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- 통계 정보 -->
+                    <Border Grid.Row="3" BorderBrush="#3498DB" BorderThickness="1" 
+                CornerRadius="5" Padding="12" Margin="0,0,0,10">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#E8F4FD" Offset="0"/>
+                                <GradientStop Color="#D5E8F7" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="5"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- 첫 번째 줄: 기본 통계 -->
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <TextBlock Text="총 강의실: " FontSize="12" FontWeight="Bold"/>
+                                    <TextBlock x:Name="txtClassroomCount" Text="0개" FontSize="12" FontWeight="Bold" Foreground="#3498DB"/>
+                                    <TextBlock x:Name="txtClassroomDataSourceStatus" Text=" | 임시 목록" FontSize="11" Foreground="#3498DB" Margin="8,0,0,0"/>
+                                </StackPanel>
+
+                                <Button Grid.Column="1" x:Name="btnRefreshClassroomData" Content="🔄" Width="25" Height="20" 
+                            Background="Transparent" BorderThickness="0" FontSize="12"
+                            Click="btnRefreshClassroomData_Click" ToolTip="데이터 새로고침"/>
+                            </Grid>
+
+                            <!-- 두 번째 줄: 선택 및 사용 현황 -->
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" x:Name="txtClassroomSelectionStatus" Text="선택된 강의실이 없습니다" 
+                              FontSize="10" Foreground="#7F8C8D"/>
+                                <TextBlock Grid.Column="1" x:Name="txtClassroomUsageStats" Text="" 
+                              FontSize="10" Foreground="#3498DB" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- 강의실 리스트 (대폭 개선) -->
+                    <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
                         <ListBox x:Name="listClassrooms" SelectionChanged="listClassrooms_SelectionChanged"
-                                 BorderThickness="0" Background="Transparent">
+                     BorderThickness="0" Background="Transparent" SelectionMode="Extended">
+
+                            <!-- 개선된 아이템 컨테이너 스타일 -->
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="BorderElement" 
+                                            Background="White"
+                                            BorderBrush="#BDC3C7"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Margin="0,3"
+                                            Padding="3">
+                                                    <ContentPresenter Margin="12"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="BorderElement" Property="BorderBrush" Value="#3498DB"/>
+                                                        <Setter TargetName="BorderElement" Property="BorderThickness" Value="2"/>
+                                                        <Setter TargetName="BorderElement" Property="Background" Value="#E8F4FD"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="BorderElement" Property="Background" Value="#F8F9FA"/>
+                                                        <Setter TargetName="BorderElement" Property="BorderBrush" Value="#3498DB"/>
+                                                    </Trigger>
+                                                    <MultiTrigger>
+                                                        <MultiTrigger.Conditions>
+                                                            <Condition Property="IsSelected" Value="True"/>
+                                                            <Condition Property="IsMouseOver" Value="True"/>
+                                                        </MultiTrigger.Conditions>
+                                                        <Setter TargetName="BorderElement" Property="Background" Value="#D5E8F7"/>
+                                                    </MultiTrigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <!-- 대폭 개선된 아이템 템플릿 -->
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Margin="0,0,0,10" Padding="20" CornerRadius="10" 
-                                            BorderThickness="1" BorderBrush="#BDC3C7">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                                <GradientStop Color="#3498DB" Offset="0"/>
-                                                <GradientStop Color="#D5E8F7" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Text="🏢" FontSize="16" Margin="0,0,10,0"/>
-                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" 
-                                                       Foreground="White" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- 강의실 정보 -->
+                                        <StackPanel Grid.Column="0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="🏢" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" 
+                                               Foreground="#2C3E50" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- 추가 정보 (있는 경우) -->
+                                            <StackPanel Orientation="Horizontal" Margin="24,5,0,0">
+                                                <TextBlock Text="📍" FontSize="10" Margin="0,0,5,0"/>
+                                                <TextBlock Text="{Binding LocationInfo}" FontSize="10" 
+                                               Foreground="#7F8C8D" VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- 생성/수정 날짜 -->
+                                            <StackPanel Orientation="Horizontal" Margin="24,2,0,0">
+                                                <TextBlock Text="📅" FontSize="9" Margin="0,0,5,0"/>
+                                                <TextBlock FontSize="9" Foreground="#95A5A6">
+                                                    <TextBlock.Text>
+                                                        <Binding Path="CreatedAt" StringFormat="{}생성: {0:yyyy-MM-dd}"/>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
                                         </StackPanel>
-                                    </Border>
+
+                                        <!-- 상태 아이콘들 -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                            <TextBlock Text="💾" FontSize="16" Margin="0,2" ToolTip="데이터베이스에 저장됨"
+                                          Visibility="{Binding IsSaved, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <TextBlock Text="⏳" FontSize="16" Margin="0,2" ToolTip="저장 대기 중"
+                                          Visibility="{Binding IsTemp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <TextBlock Text="🔒" FontSize="16" Margin="0,2" ToolTip="사용 중 (삭제 불가)"
+                                          Visibility="{Binding IsInUse, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </ScrollViewer>
 
-                    <!-- 편집 버튼들 -->
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
-                        <Border CornerRadius="5"><Button x:Name="btnEditClassroom" Content="✏️ 수정" Width="70" Height="32" 
-                                Margin="0,0,8,0" Click="btnEditClassroom_Click" IsEnabled="False"
-                                Background="#3498DB" Foreground="White" FontSize="11" FontWeight="Bold"
-                                BorderThickness="0"/></Border>
-                        
-                        <Border CornerRadius="5"><Button x:Name="btnDeleteClassroom" Content="🗑️ 삭제" Width="70" Height="32" 
-                                Click="btnDeleteClassroom_Click" IsEnabled="False"
-                                Background="#E74C3C" Foreground="White" FontSize="11" FontWeight="Bold"
-                                BorderThickness="0"/></Border>
-                        
-                    </StackPanel>
+                    <!-- 편집 버튼들 (3단계로 구성) -->
+                    <Grid Grid.Row="5" Margin="0,15,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 1단계: 개별 조작 버튼들 -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Border CornerRadius="8" Margin="2,0">
+                                <Button x:Name="btnEditClassroom" Content="✏️ 수정" Width="65" Height="30" 
+                            Click="btnEditClassroom_Click" IsEnabled="False"
+                            Background="#3498DB" Foreground="White" FontSize="10" FontWeight="Bold"
+                            BorderThickness="0" ToolTip="선택한 강의실 정보를 수정합니다">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" 
+                                                    CornerRadius="8" 
+                                                    Padding="{TemplateBinding Padding}">
+                                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="#2980B9"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Background" Value="#BDC3C7"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </Border>
+
+                            <Border CornerRadius="8" Margin="2,0">
+                                <Button x:Name="btnDeleteClassroom" Content="🗑️ 삭제" Width="65" Height="30" 
+                            Click="btnDeleteClassroom_Click" IsEnabled="False"
+                            Background="#E74C3C" Foreground="White" FontSize="10" FontWeight="Bold"
+                            BorderThickness="0" ToolTip="선택한 강의실을 삭제합니다">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" 
+                                                    CornerRadius="8" 
+                                                    Padding="{TemplateBinding Padding}">
+                                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="#C0392B"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Background" Value="#BDC3C7"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </Border>
+
+                            <Border CornerRadius="8" Margin="2,0">
+                                <Button x:Name="btnDeleteSelectedClassrooms" Content="🗑️ 선택삭제" Width="75" Height="30" 
+                            Click="btnDeleteSelectedClassrooms_Click" IsEnabled="False"
+                            Background="#D35400" Foreground="White" FontSize="9" FontWeight="Bold"
+                            BorderThickness="0" ToolTip="선택한 여러 강의실을 한번에 삭제합니다">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" 
+                                                    CornerRadius="8" 
+                                                    Padding="{TemplateBinding Padding}">
+                                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="#A04000"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Background" Value="#BDC3C7"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- 2단계: 데이터 관리 버튼들 -->
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Border CornerRadius="6" Margin="2,0">
+                                <Button x:Name="btnLoadClassroomsFromDB" Content="📥 DB에서 불러오기" Width="90" Height="26" 
+                            Click="btnLoadClassroomsFromDB_Click"
+                            Background="#8E44AD" Foreground="White" FontSize="9" FontWeight="Bold"
+                            BorderThickness="0" ToolTip="데이터베이스에서 강의실 목록을 불러옵니다"/>
+                            </Border>
+
+                            <Border CornerRadius="6" Margin="2,0">
+                                <Button x:Name="btnClearClassroomList" Content="🗑️ 목록비우기" Width="80" Height="26" 
+                            Click="btnClearClassroomList_Click"
+                            Background="#95A5A6" Foreground="White" FontSize="9" FontWeight="Bold"
+                            BorderThickness="0" ToolTip="임시 목록을 모두 비웁니다"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>
@@ -220,35 +411,96 @@
         <Border Grid.Row="2" Background="#ECF0F1" BorderBrush="#BDC3C7" BorderThickness="1" 
                 CornerRadius="8" Padding="15" Margin="0,20,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                <!-- 교수 정보 입력 페이지로 이동 버튼 -->
+                <Border CornerRadius="8" Margin="5,0">
+                    <Button x:Name="btnGoToProfessor" Content="👨‍🏫 교수 정보 입력" Width="140" Height="45" Margin="5,0"
+                            Background="#9B59B6" Foreground="White" FontWeight="Bold" FontSize="12"
+                            Click="btnGoToProfessor_Click" BorderThickness="0"
+                            ToolTip="교수 정보를 입력하는 페이지로 이동합니다">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" 
+                                                    CornerRadius="8" 
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#8E44AD"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Border>
+
+                <!-- 교과목 정보 입력 페이지로 이동 버튼 -->
+                <Border CornerRadius="8" Margin="5,0">
+                    <Button x:Name="btnGoToSubject" Content="📚 교과목 정보 입력" Width="140" Height="45" Margin="5,0"
+                            Background="#E67E22" Foreground="White" FontWeight="Bold" FontSize="12"
+                            Click="btnGoToSubject_Click" BorderThickness="0"
+                            ToolTip="교과목 정보를 입력하는 페이지로 이동합니다">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" 
+                                                    CornerRadius="8" 
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#D35400"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Border>
+
                 <Border CornerRadius="8">
                     <Button x:Name="btnSaveAll" Content="💾 전체 저장" Width="140" Height="45" Margin="10,0"
                         Background="#2ECC71" Foreground="White" FontWeight="Bold" FontSize="14"
                         Click="btnSaveAll_Click" BorderThickness="0" IsEnabled="False">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" 
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" 
                                                 CornerRadius="8" 
                                                 Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                <ContentPresenter HorizontalAlignment="Center" 
                                                               VerticalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#27AE60"/>
-                                            </Trigger>
-                                            <Trigger Property="IsEnabled" Value="False">
-                                                <Setter Property="Background" Value="#BDC3C7"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#27AE60"/>
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Background" Value="#BDC3C7"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </Border>
 
                 <Border CornerRadius="8">

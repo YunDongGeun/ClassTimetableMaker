@@ -22,6 +22,11 @@ namespace ClassTimetableMaker.Views
         private List<Professor> _availableProfessors;
         private List<ProfessorCheckBox> _professorCheckBoxes;
 
+        private bool _isShowingDBSubjects = false;
+        private List<Subject> _dbSubjects = new List<Subject>();
+        private string _currentGradeFilter = "전체";
+        private string _currentSearchText = "";
+
         public SubjectInputPage(MainWindow mainWindow, Subject subjectToEdit = null)
         {
             InitializeComponent();
@@ -58,13 +63,6 @@ namespace ClassTimetableMaker.Views
                 _selectedSubject = viewModel;
                 btnAddSubject.Content = "✏️ 수정 완료";
             }
-        }
-
-        // 교과목 수 업데이트
-        private void UpdateSubjectCount()
-        {
-            txtSubjectCount.Text = $"{_tempSubjects.Count}개";
-            btnSaveAll.IsEnabled = _tempSubjects.Count > 0;
         }
 
         // 교수 목록 로드
@@ -238,16 +236,16 @@ namespace ClassTimetableMaker.Views
         }
 
         // 연강 설정 체크박스 이벤트
-        private void chkIsContinuous_Checked(object sender, RoutedEventArgs e)
-        {
-            spContinuousSettings.Visibility = Visibility.Visible;
-            UpdateContinuousHours();
-        }
+        //private void chkIsContinuous_Checked(object sender, RoutedEventArgs e)
+        //{
+        //    spContinuousSettings.Visibility = Visibility.Visible;
+        //    UpdateContinuousHours();
+        //}
 
-        private void chkIsContinuous_Unchecked(object sender, RoutedEventArgs e)
-        {
-            spContinuousSettings.Visibility = Visibility.Collapsed;
-        }
+        //private void chkIsContinuous_Unchecked(object sender, RoutedEventArgs e)
+        //{
+        //    spContinuousSettings.Visibility = Visibility.Collapsed;
+        //}
 
         // 연강 시간 업데이트
         private void UpdateContinuousHours()
@@ -310,7 +308,7 @@ namespace ClassTimetableMaker.Views
                     LectureHours1 = int.Parse(((ComboBoxItem)cbLectureHours1.SelectedItem).Content.ToString()),
                     LectureHours2 = int.Parse(((ComboBoxItem)cbLectureHours2.SelectedItem).Content.ToString()),
                     SectionCount = int.Parse(((ComboBoxItem)cbSectionCount.SelectedItem).Content.ToString()),
-                    IsContinuous = chkIsContinuous.IsChecked == true,
+                    // IsContinuous = chkIsContinuous.IsChecked == true,
                     ContinuousHours = cbContinuousHours.SelectedItem != null ?
                         int.Parse(((ComboBoxItem)cbContinuousHours.SelectedItem).Content.ToString()) : 1,
                     SelectedProfessors = GetSelectedProfessors()
@@ -414,15 +412,6 @@ namespace ClassTimetableMaker.Views
             }
         }
 
-        // 교과목 목록 선택 변경
-        private void listSubjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedSubject = listSubjects.SelectedItem as SubjectViewModel;
-
-            btnEditSubject.IsEnabled = selectedSubject != null;
-            btnDeleteSubject.IsEnabled = selectedSubject != null;
-        }
-
         // 교과목 수정 버튼 클릭
         private void btnEditSubject_Click(object sender, RoutedEventArgs e)
         {
@@ -494,7 +483,8 @@ namespace ClassTimetableMaker.Views
             SetComboBoxValue(cbSectionCount, subject.SectionCount.ToString());
 
             // 연강
-            chkIsContinuous.IsChecked = subject.IsContinuous;
+            // chkIsContinuous.IsChecked = subject.IsContinuous;
+
             if (subject.IsContinuous)
             {
                 spContinuousSettings.Visibility = Visibility.Visible;
@@ -649,7 +639,7 @@ namespace ClassTimetableMaker.Views
             txtSectionPreview.Text = "분반: A";
 
             // 연강 초기화
-            chkIsContinuous.IsChecked = false;
+            // chkIsContinuous.IsChecked = false;
             spContinuousSettings.Visibility = Visibility.Collapsed;
             cbContinuousHours.SelectedIndex = 0; // 1시간
 
@@ -839,6 +829,468 @@ namespace ClassTimetableMaker.Views
             }
 
             _mainWindow.NavigateToClassroomInputPage();
+        }
+
+        private void UpdateSubjectCount()
+        {
+            if (_isShowingDBSubjects)
+            {
+                var filteredCount = GetFilteredSubjects(_dbSubjects.Select(s => SubjectViewModel.FromSubject(s)).ToList()).Count;
+                txtSubjectCount.Text = $"{filteredCount}개 (전체 {_dbSubjects.Count}개)";
+            }
+            else
+            {
+                var filteredCount = GetFilteredSubjects(_tempSubjects.ToList()).Count;
+                txtSubjectCount.Text = $"{filteredCount}개 (전체 {_tempSubjects.Count}개)";
+            }
+
+            btnSaveAll.IsEnabled = _tempSubjects.Count > 0;
+            UpdateGradeStatistics();
+        }
+
+        // ========================================
+        // 새로운 이벤트 핸들러들
+        // ========================================
+
+        // 데이터 소스 변경
+        private async void SubjectDataSource_Changed(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded) return;
+
+            if (rbShowTempSubjects.IsChecked == true)
+            {
+                _isShowingDBSubjects = false;
+                ApplyFiltersAndSearch();
+                txtSubjectDataSourceStatus.Text = " | 임시 목록";
+            }
+            else if (rbShowDBSubjects.IsChecked == true)
+            {
+                _isShowingDBSubjects = true;
+                await LoadSubjectsFromDatabase();
+                txtSubjectDataSourceStatus.Text = " | 데이터베이스";
+            }
+
+            UpdateSubjectSelectionStatus();
+        }
+
+        // 검색 텍스트 변경
+        private void txtSearchSubject_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _currentSearchText = txtSearchSubject.Text?.Trim() ?? "";
+            ApplyFiltersAndSearch();
+        }
+
+        // 학년 필터 변경
+        private void cbFilterGrade_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded || cbFilterGrade.SelectedItem == null) return;
+
+            _currentGradeFilter = ((ComboBoxItem)cbFilterGrade.SelectedItem).Content.ToString();
+            ApplyFiltersAndSearch();
+        }
+
+        // 필터 초기화
+        private void btnClearFilter_Click(object sender, RoutedEventArgs e)
+        {
+            txtSearchSubject.Clear();
+            cbFilterGrade.SelectedIndex = 0; // "전체"
+            _currentSearchText = "";
+            _currentGradeFilter = "전체";
+            ApplyFiltersAndSearch();
+        }
+
+        // 학년별 필터 버튼 클릭
+        private void btnFilterGrade_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is string grade)
+            {
+                _currentGradeFilter = grade;
+
+                // 콤보박스도 동기화
+                for (int i = 0; i < cbFilterGrade.Items.Count; i++)
+                {
+                    var item = (ComboBoxItem)cbFilterGrade.Items[i];
+                    if (item.Content.ToString() == grade)
+                    {
+                        cbFilterGrade.SelectedIndex = i;
+                        break;
+                    }
+                }
+
+                ApplyFiltersAndSearch();
+            }
+        }
+
+        // ========================================
+        // 데이터 관리 이벤트 핸들러들
+        // ========================================
+
+        // DB에서 교과목 불러오기
+        private async void btnLoadSubjectsFromDB_Click(object sender, RoutedEventArgs e)
+        {
+            rbShowDBSubjects.IsChecked = true;
+            await LoadSubjectsFromDatabase();
+        }
+
+        // 데이터베이스에서 교과목 목록 로드
+        private async Task LoadSubjectsFromDatabase()
+        {
+            try
+            {
+                txtSubjectDataSourceStatus.Text = " | DB 로딩 중...";
+                btnLoadSubjectsFromDB.IsEnabled = false;
+
+                _dbSubjects = await _dbManager.GetSubjectsAsync();
+
+                ApplyFiltersAndSearch();
+                txtSubjectDataSourceStatus.Text = " | 데이터베이스";
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"데이터베이스에서 불러오기 실패: {ex.Message}", "오류", MessageBoxImage.Error);
+                txtSubjectDataSourceStatus.Text = " | 로딩 실패";
+            }
+            finally
+            {
+                btnLoadSubjectsFromDB.IsEnabled = true;
+            }
+        }
+
+        // 데이터 새로고침
+        private async void btnRefreshSubjectData_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isShowingDBSubjects)
+            {
+                await LoadSubjectsFromDatabase();
+            }
+            else
+            {
+                ApplyFiltersAndSearch();
+            }
+            UpdateSubjectSelectionStatus();
+        }
+
+        // 목록 비우기
+        private void btnClearSubjectList_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isShowingDBSubjects)
+            {
+                ShowMessage("데이터베이스 모드에서는 목록을 비울 수 없습니다.", "알림", MessageBoxImage.Information);
+                return;
+            }
+
+            if (_tempSubjects.Count == 0)
+            {
+                ShowMessage("비울 목록이 없습니다.", "알림", MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"임시 목록의 {_tempSubjects.Count}개 교과목을 모두 삭제하시겠습니까?\n※ 이 작업은 되돌릴 수 없습니다.",
+                "목록 비우기 확인",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _tempSubjects.Clear();
+                ApplyFiltersAndSearch();
+                UpdateSubjectSelectionStatus();
+                ShowMessage("임시 목록이 비워졌습니다.", "완료", MessageBoxImage.Information);
+            }
+        }
+
+        // 선택 삭제
+        private async void btnDeleteSelectedSubjects_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = listSubjects.SelectedItems.Cast<SubjectViewModel>().ToList();
+
+            if (selectedItems.Count == 0)
+            {
+                ShowMessage("삭제할 교과목을 선택해주세요.", "알림", MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"선택한 {selectedItems.Count}개의 교과목을 삭제하시겠습니까?\n※ 이 작업은 되돌릴 수 없습니다.",
+                "선택 삭제 확인",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                btnDeleteSelectedSubjects.IsEnabled = false;
+                int successCount = 0;
+                int failCount = 0;
+                var failedNames = new List<string>();
+
+                foreach (var item in selectedItems)
+                {
+                    try
+                    {
+                        if (_isShowingDBSubjects)
+                        {
+                            // DB에서 삭제
+                            bool deleted = await _dbManager.DeleteSubjectAsync(item.Id);
+                            if (deleted)
+                            {
+                                successCount++;
+                            }
+                            else
+                            {
+                                failCount++;
+                                failedNames.Add(item.Name);
+                            }
+                        }
+                        else
+                        {
+                            // 임시 목록에서 삭제
+                            var tempItem = _tempSubjects.FirstOrDefault(s => s.Id == item.Id);
+                            if (tempItem != null)
+                            {
+                                _tempSubjects.Remove(tempItem);
+                                successCount++;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        failCount++;
+                        failedNames.Add($"{item.Name} ({ex.Message})");
+                    }
+                }
+
+                // 결과 메시지
+                string resultMessage = $"삭제 완료!\n\n✅ 성공: {successCount}개";
+                if (failCount > 0)
+                {
+                    resultMessage += $"\n❌ 실패: {failCount}개";
+                    if (failedNames.Count > 0)
+                        resultMessage += $"\n\n실패한 항목:\n{string.Join("\n", failedNames)}";
+                }
+
+                ShowMessage(resultMessage, "삭제 결과", MessageBoxImage.Information);
+
+                // 데이터 새로고침
+                if (_isShowingDBSubjects)
+                {
+                    await LoadSubjectsFromDatabase();
+                }
+                else
+                {
+                    ApplyFiltersAndSearch();
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"선택 삭제 중 오류: {ex.Message}", "오류", MessageBoxImage.Error);
+            }
+            finally
+            {
+                btnDeleteSelectedSubjects.IsEnabled = true;
+                UpdateSubjectSelectionStatus();
+            }
+        }
+
+        // 교과목 복사
+        private void btnDuplicateSubject_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = listSubjects.SelectedItem as SubjectViewModel;
+            if (selectedItem == null) return;
+
+            try
+            {
+                // 새로운 교과목 생성 (이름에 "복사" 추가)
+                var duplicatedSubject = new SubjectViewModel
+                {
+                    Id = DateTime.Now.Millisecond, // 새 임시 ID
+                    Name = $"{selectedItem.Name} 복사",
+                    Grade = selectedItem.Grade,
+                    CourseType = selectedItem.CourseType,
+                    LectureHours1 = selectedItem.LectureHours1,
+                    LectureHours2 = selectedItem.LectureHours2,
+                    SectionCount = selectedItem.SectionCount,
+                    IsContinuous = selectedItem.IsContinuous,
+                    ContinuousHours = selectedItem.ContinuousHours,
+                    SelectedProfessors = selectedItem.SelectedProfessors.Select(p => new ProfessorSelection
+                    {
+                        ProfessorId = p.ProfessorId,
+                        ProfessorName = p.ProfessorName,
+                        IsPrimary = p.IsPrimary
+                    }).ToList()
+                };
+
+                _tempSubjects.Add(duplicatedSubject);
+                ApplyFiltersAndSearch();
+
+                ShowMessage($"'{selectedItem.Name}'이(가) 복사되어 임시 목록에 추가되었습니다.", "복사 완료", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"교과목 복사 중 오류: {ex.Message}", "오류", MessageBoxImage.Error);
+            }
+        }
+
+        // 내보내기
+        private void btnExportSubjects_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var currentList = _isShowingDBSubjects ?
+                    _dbSubjects.Select(s => SubjectViewModel.FromSubject(s)).ToList() :
+                    _tempSubjects.ToList();
+
+                var filteredList = GetFilteredSubjects(currentList);
+
+                if (filteredList.Count == 0)
+                {
+                    ShowMessage("내보낼 교과목이 없습니다.", "알림", MessageBoxImage.Information);
+                    return;
+                }
+
+                // 간단한 텍스트 형태로 내보내기
+                var exportText = "교과목 목록\n" + new string('=', 50) + "\n\n";
+
+                foreach (var subject in filteredList)
+                {
+                    exportText += $"교과목명: {subject.Name}\n";
+                    exportText += $"학년: {subject.Grade}\n";
+                    exportText += $"과목구분: {subject.CourseType}\n";
+                    exportText += $"강의시간: 1차시 {subject.LectureHours1}시간, 2차시 {subject.LectureHours2}시간\n";
+                    exportText += $"분반: {subject.SectionCount}개\n";
+                    exportText += $"담당교수: {subject.ProfessorNames}\n";
+                    if (subject.IsContinuous)
+                        exportText += $"연강: {subject.ContinuousHours}시간\n";
+                    exportText += new string('-', 30) + "\n\n";
+                }
+
+                // 클립보드에 복사
+                Clipboard.SetText(exportText);
+                ShowMessage($"{filteredList.Count}개 교과목 정보가 클립보드에 복사되었습니다.\n메모장 등에 붙여넣기 하여 저장하세요.", "내보내기 완료", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"내보내기 중 오류: {ex.Message}", "오류", MessageBoxImage.Error);
+            }
+        }
+
+        // ========================================
+        // 필터링 및 검색 로직
+        // ========================================
+
+        // 필터와 검색 적용
+        private void ApplyFiltersAndSearch()
+        {
+            try
+            {
+                var sourceList = _isShowingDBSubjects ?
+                    _dbSubjects.Select(s => CreateSubjectViewModel(s)).ToList() :
+                    _tempSubjects.ToList();
+
+                var filteredList = GetFilteredSubjects(sourceList);
+
+                listSubjects.ItemsSource = filteredList;
+                UpdateSubjectCount();
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"필터 적용 중 오류: {ex.Message}", "오류", MessageBoxImage.Error);
+            }
+        }
+
+        // 필터링된 교과목 목록 가져오기
+        private List<SubjectViewModel> GetFilteredSubjects(List<SubjectViewModel> sourceList)
+        {
+            var filtered = sourceList.AsEnumerable();
+
+            // 학년 필터
+            if (_currentGradeFilter != "전체")
+            {
+                filtered = filtered.Where(s => s.Grade == _currentGradeFilter);
+            }
+
+            // 검색 필터
+            if (!string.IsNullOrEmpty(_currentSearchText))
+            {
+                filtered = filtered.Where(s =>
+                    s.Name.Contains(_currentSearchText, StringComparison.OrdinalIgnoreCase) ||
+                    s.ProfessorNames.Contains(_currentSearchText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return filtered.OrderBy(s => s.Grade).ThenBy(s => s.Name).ToList();
+        }
+
+        // Subject를 SubjectViewModel로 변환 (DB 데이터용)
+        private SubjectViewModel CreateSubjectViewModel(Subject subject)
+        {
+            var viewModel = SubjectViewModel.FromSubject(subject);
+            viewModel.IsSaved = true;
+            viewModel.IsTemp = false;
+            return viewModel;
+        }
+
+        // 학년별 통계 업데이트
+        private void UpdateGradeStatistics()
+        {
+            try
+            {
+                var currentList = _isShowingDBSubjects ?
+                    _dbSubjects.Select(s => CreateSubjectViewModel(s)).ToList() :
+                    _tempSubjects.ToList();
+
+                var stats = currentList.GroupBy(s => s.Grade)
+                    .OrderBy(g => g.Key)
+                    .Select(g => $"{g.Key}:{g.Count()}")
+                    .ToList();
+
+                txtGradeStatistics.Text = stats.Count > 0 ? string.Join(" | ", stats) : "";
+            }
+            catch (Exception ex)
+            {
+                txtGradeStatistics.Text = "통계 오류";
+            }
+        }
+
+        // 선택 상태 업데이트
+        private void UpdateSubjectSelectionStatus()
+        {
+            int selectedCount = listSubjects.SelectedItems.Count;
+
+            if (selectedCount == 0)
+            {
+                txtSubjectSelectionStatus.Text = "선택된 교과목이 없습니다";
+                btnEditSubject.IsEnabled = false;
+                btnDeleteSubject.IsEnabled = false;
+                btnDeleteSelectedSubjects.IsEnabled = false;
+                btnDuplicateSubject.IsEnabled = false;
+            }
+            else if (selectedCount == 1)
+            {
+                var selectedItem = listSubjects.SelectedItem as SubjectViewModel;
+                txtSubjectSelectionStatus.Text = $"선택됨: {selectedItem?.Name}";
+                btnEditSubject.IsEnabled = true;
+                btnDeleteSubject.IsEnabled = true;
+                btnDeleteSelectedSubjects.IsEnabled = true;
+                btnDuplicateSubject.IsEnabled = true;
+            }
+            else
+            {
+                txtSubjectSelectionStatus.Text = $"{selectedCount}개 교과목이 선택됨";
+                btnEditSubject.IsEnabled = false; // 다중 선택 시 수정 불가
+                btnDeleteSubject.IsEnabled = false;
+                btnDeleteSelectedSubjects.IsEnabled = true;
+                btnDuplicateSubject.IsEnabled = false; // 다중 선택 시 복사 불가
+            }
+        }
+
+        // 교과목 목록 선택 변경 (기존 메서드 수정)
+        private void listSubjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateSubjectSelectionStatus();
         }
 
     }
