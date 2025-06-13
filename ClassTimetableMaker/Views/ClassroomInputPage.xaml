@@ -1,0 +1,212 @@
+﻿<Page x:Class="ClassTimetableMaker.Views.ClassroomInputPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassTimetableMaker.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="800"
+      Background="White"
+      Title="강의실 정보 입력">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 제목 -->
+        <TextBlock Grid.Row="0" Text="강의실 정보 입력" 
+                   FontSize="24" FontWeight="Bold" 
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 입력 폼 -->
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
+                <StackPanel>
+                    <!-- 강의실 기본 정보 -->
+                    <GroupBox Header="강의실 기본 정보" Margin="0,0,0,20" Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="강의실 번호/이름" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBox x:Name="txtClassroomName" Height="30" Margin="0,0,0,15"/>
+
+                            <TextBlock Text="건물명" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBox x:Name="txtBuilding" Height="30" Margin="0,0,0,15"/>
+
+                            <TextBlock Text="층수" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="cbFloor" Height="30" Margin="0,0,0,15">
+                                <ComboBoxItem Content="지하 2층"/>
+                                <ComboBoxItem Content="지하 1층"/>
+                                <ComboBoxItem Content="1층"/>
+                                <ComboBoxItem Content="2층"/>
+                                <ComboBoxItem Content="3층"/>
+                                <ComboBoxItem Content="4층"/>
+                                <ComboBoxItem Content="5층"/>
+                                <ComboBoxItem Content="6층"/>
+                                <ComboBoxItem Content="7층"/>
+                                <ComboBoxItem Content="8층"/>
+                                <ComboBoxItem Content="9층"/>
+                                <ComboBoxItem Content="10층"/>
+                            </ComboBox>
+
+                            <TextBlock Text="수용 인원" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBox x:Name="txtCapacity" Height="30" Margin="0,0,0,15" 
+                                     PreviewTextInput="NumberValidationTextBox"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- 강의실 유형 및 시설 -->
+                    <GroupBox Header="강의실 유형 및 시설" Margin="0,0,0,20" Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="강의실 유형" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                <RadioButton x:Name="rbGeneralClassroom" Content="일반강의실" Margin="0,0,15,0"/>
+                                <RadioButton x:Name="rbComputerLab" Content="컴퓨터실" Margin="0,0,15,0"/>
+                                <RadioButton x:Name="rbLaboratory" Content="실험실" Margin="0,0,15,0"/>
+                                <RadioButton x:Name="rbSeminarRoom" Content="세미나실" Margin="0,0,15,0"/>
+                                <RadioButton x:Name="rbLectureHall" Content="대강당" Margin="0,0,15,0"/>
+                            </StackPanel>
+
+                            <TextBlock Text="보유 시설" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <WrapPanel Margin="0,0,0,15">
+                                <CheckBox x:Name="chkProjector" Content="프로젝터" Margin="0,0,15,5"/>
+                                <CheckBox x:Name="chkWhiteboard" Content="화이트보드" Margin="0,0,15,5"/>
+                                <CheckBox x:Name="chkComputers" Content="컴퓨터" Margin="0,0,15,5"/>
+                                <CheckBox x:Name="chkAirConditioner" Content="에어컨" Margin="0,0,15,5"/>
+                                <CheckBox x:Name="chkSoundSystem" Content="음향시설" Margin="0,0,15,5"/>
+                                <CheckBox x:Name="chkMicrophone" Content="마이크" Margin="0,0,15,5"/>
+                                <CheckBox x:Name="chkElevator" Content="엘리베이터 접근" Margin="0,0,15,5"/>
+                                <CheckBox x:Name="chkDisabledAccess" Content="장애인 접근" Margin="0,0,15,5"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- 사용 제약 사항 -->
+                    <GroupBox Header="사용 제약 사항" Margin="0,0,0,20" Padding="15">
+                        <StackPanel>
+                            <CheckBox x:Name="chkSpecialPurpose" Content="특수 목적 강의실 (제한적 사용)" 
+                                      Margin="0,0,0,10" Checked="chkSpecialPurpose_Checked" 
+                                      Unchecked="chkSpecialPurpose_Unchecked"/>
+
+                            <StackPanel x:Name="spSpecialPurposeDetails" Visibility="Collapsed" Margin="20,0,0,15">
+                                <TextBlock Text="사용 제한 사유" FontWeight="Bold" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtSpecialPurposeReason" Height="60" TextWrapping="Wrap" 
+                                         AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                            </StackPanel>
+
+                            <TextBlock Text="사용 불가능한 시간" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBlock Text="(청소, 유지보수 등)" FontSize="10" Foreground="Gray" Margin="0,0,0,5"/>
+
+                            <Border BorderBrush="LightGray" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="5"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="요일" Margin="0,0,0,3"/>
+                                    <ComboBox x:Name="cbUnavailableDay" Grid.Row="2" Grid.Column="0" Height="30">
+                                        <ComboBoxItem Content="월요일"/>
+                                        <ComboBoxItem Content="화요일"/>
+                                        <ComboBoxItem Content="수요일"/>
+                                        <ComboBoxItem Content="목요일"/>
+                                        <ComboBoxItem Content="금요일"/>
+                                    </ComboBox>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="시간대" Margin="0,0,0,3"/>
+                                    <ComboBox x:Name="cbUnavailableTime" Grid.Row="2" Grid.Column="2" Height="30">
+                                        <ComboBoxItem Content="오전"/>
+                                        <ComboBoxItem Content="오후"/>
+                                        <ComboBoxItem Content="종일"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- 비고 -->
+                    <GroupBox Header="비고" Margin="0,0,0,20" Padding="15">
+                        <TextBox x:Name="txtNotes" Height="80" TextWrapping="Wrap" 
+                                 AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 강의실 목록 -->
+            <GroupBox Grid.Column="1" Header="등록된 강의실 목록" Margin="10,0,0,0" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="총 강의실 수: 0개" x:Name="txtClassroomCount" FontWeight="Bold"/>
+                        <TextBlock Text=" | " Margin="5,0"/>
+                        <ComboBox x:Name="cbFilterBuilding" Width="100" SelectionChanged="cbFilterBuilding_SelectionChanged">
+                            <ComboBoxItem Content="전체 건물" IsSelected="True"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ListBox x:Name="listClassrooms" SelectionChanged="listClassrooms_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="2" Padding="8" Background="LightGreen" CornerRadius="3">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="12"/>
+                                            <TextBlock Text="{Binding Building}" FontSize="10" Foreground="DarkGreen"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Floor}" FontSize="9" Foreground="Gray"/>
+                                                <TextBlock Text=" | " FontSize="9" Foreground="Gray"/>
+                                                <TextBlock Text="{Binding Capacity}" FontSize="9" Foreground="Gray"/>
+                                                <TextBlock Text="명" FontSize="9" Foreground="Gray"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Type}" FontSize="9" Foreground="Blue"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                        <Button x:Name="btnEditClassroom" Content="수정" Width="60" Height="30" 
+                                Margin="0,0,5,0" Click="btnEditClassroom_Click" IsEnabled="False"/>
+                        <Button x:Name="btnDeleteClassroom" Content="삭제" Width="60" Height="30" 
+                                Click="btnDeleteClassroom_Click" IsEnabled="False"/>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+        </Grid>
+
+        <!-- 버튼 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button x:Name="btnProfessorInput" Content="교수 입력" Width="100" Height="35" 
+                    Margin="0,0,10,0" Click="btnProfessorInput_Click"/>
+            <Button x:Name="btnSubjectInput" Content="교과목 입력" Width="100" Height="35" 
+                    Margin="0,0,10,0" Click="btnSubjectInput_Click"/>
+            <Button x:Name="btnTimetable" Content="시간표 작성" Width="100" Height="35" 
+                    Margin="0,0,10,0" Click="btnTimetable_Click"/>
+            <Button x:Name="btnClear" Content="초기화" Width="80" Height="35" 
+                    Margin="0,0,10,0" Click="btnClear_Click"/>
+            <Button x:Name="btnSave" Content="저장" Width="80" Height="35" 
+                    Background="#007ACC" Foreground="White"
+                    Click="btnSave_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>

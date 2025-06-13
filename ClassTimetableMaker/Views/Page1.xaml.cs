@@ -41,14 +41,9 @@ namespace ClassTimetableMaker.Views
             InitializeComponent();
             _mainWindow = mainWindow;
 
-            // DB 매니저 초기화
-            string server = ConfigurationManager.AppSettings["DbServer"] ?? "localhost";
-            int port = int.Parse(ConfigurationManager.AppSettings["DbPort"] ?? "3306");
-            string database = ConfigurationManager.AppSettings["DbName"] ?? "class_time_table_maker";
-            string username = ConfigurationManager.AppSettings["DbUser"];
-            string password = ConfigurationManager.AppSettings["DbPassword"];
-
-            _dbManager = new DBManager(server, port, database, username, password);
+            // 새로운 SQLite DB 매니저 초기화
+            string databasePath = ConfigurationManager.AppSettings["DatabasePath"];
+            _dbManager = new SQLiteDBManager(databasePath); // 타입 변경
 
             // 초기 시간표 구조 설정
             InitializeDynamicTimetable();

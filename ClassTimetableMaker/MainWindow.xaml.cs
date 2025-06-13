@@ -21,21 +21,22 @@ namespace ClassTimetableMaker
         private TimeTablePage _timeTablePage;
         private InputPage _inputPage;
         private QueryPage _queryPage;
-        private Page1 _page1;
-        private readonly DBManager _dbManager;
+        private Page1 _page1;            
+        
+        // 새로운 페이지들
+        private ProfessorInputPage _professorInputPage;
+        private ClassroomInputPage _classroomInputPage;
+        private SubjectInputPage _subjectInputPage;
+
+        private readonly SQLiteDBManager _dbManager;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            // DB 매니저 초기화
-            string server = ConfigurationManager.AppSettings["DbServer"] ?? "localhost";
-            int port = int.Parse(ConfigurationManager.AppSettings["DbPort"]);
-            string database = ConfigurationManager.AppSettings["DbName"];
-            string username = ConfigurationManager.AppSettings["DbUser"];
-            string password = ConfigurationManager.AppSettings["DbPassword"];
-
-            _dbManager = new DBManager(server, port, database, username, password);
+            // DB SQLite 설정
+            string databasePath = ConfigurationManager.AppSettings["DatabasePath"];
+            _dbManager = new SQLiteDBManager(databasePath);
 
             // 애플리케이션 로드 시 DB 연결 테스트
             TestDatabaseConnection();
@@ -75,6 +76,58 @@ namespace ClassTimetableMaker
                     MessageBoxImage.Error
                 );
             }
+        }
+
+        // 교수 입력 페이지로 이동 (새 교수 추가)
+        public void NavigateToProfessorInputPage()
+        {
+            _professorInputPage = new ProfessorInputPage(this);
+            MainFrame.Navigate(_professorInputPage);
+        }
+
+        // 교수 입력 페이지로 이동 (교수 정보 수정)
+        public void NavigateToProfessorInputPage(Professor professorToEdit)
+        {
+            _professorInputPage = new ProfessorInputPage(this, professorToEdit);
+            MainFrame.Navigate(_professorInputPage);
+        }
+
+        // 강의실 입력 페이지로 이동
+        public void NavigateToClassroomInputPage()
+        {
+            _classroomInputPage = new ClassroomInputPage(this);
+            MainFrame.Navigate(_classroomInputPage);
+        }
+
+        // 교과목 입력 페이지로 이동
+        public void NavigateToSubjectInputPage()
+        {
+            _subjectInputPage = new SubjectInputPage(this);
+            MainFrame.Navigate(_subjectInputPage);
+        }
+
+        // 교과목 입력 페이지로 이동 (교과목 수정)
+        public void NavigateToSubjectInputPage(Subject subjectToEdit)
+        {
+            _subjectInputPage = new SubjectInputPage(this, subjectToEdit);
+            MainFrame.Navigate(_subjectInputPage);
+        }
+
+        // 기존 메서드들
+        public void NavigateToInputPage()
+        {
+            MainFrame.Navigate(_inputPage);
+        }
+
+        public void NavigateToMainPage()
+        {
+            MainFrame.Navigate(_page1);
+        }
+
+        public void NavigateToQueryPage()
+        {
+            _queryPage = new QueryPage(this);
+            MainFrame.Navigate(_queryPage);
         }
 
         // 입력 페이지로 이동
