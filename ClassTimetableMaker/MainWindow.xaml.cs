@@ -11,15 +11,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading.Tasks;
 using System.Configuration;
-using ClassTimetableMaker;
 using ClassTimetableMaker.Views;
+using ClassTimetableMaker.Model;
 
 namespace ClassTimetableMaker
 {
     public partial class MainWindow : Window
     {
-        private TimeTablePage _timeTablePage;
-        private InputPage _inputPage;
         private QueryPage _queryPage;
         private Page1 _page1;            
         
@@ -42,8 +40,6 @@ namespace ClassTimetableMaker
             TestDatabaseConnection();
 
             // 페이지 초기화
-            _timeTablePage = new TimeTablePage(this);
-            _inputPage = new InputPage(this);
             _queryPage = new QueryPage(this);
             _page1 = new Page1(this);
 
@@ -78,6 +74,10 @@ namespace ClassTimetableMaker
             }
         }
 
+        // ========================================
+        // 페이지 네비게이션 메서드들 (중복 제거 후)
+        // ========================================
+
         // 교수 입력 페이지로 이동 (새 교수 추가)
         public void NavigateToProfessorInputPage()
         {
@@ -85,12 +85,12 @@ namespace ClassTimetableMaker
             MainFrame.Navigate(_professorInputPage);
         }
 
-        // 교수 입력 페이지로 이동 (교수 정보 수정)
-        public void NavigateToProfessorInputPage(Professor professorToEdit)
-        {
-            _professorInputPage = new ProfessorInputPage(this, professorToEdit);
-            MainFrame.Navigate(_professorInputPage);
-        }
+        //// 교수 입력 페이지로 이동 (교수 정보 수정)
+        //public void NavigateToProfessorInputPage(Professor professorToEdit)
+        //{
+        //    _professorInputPage = new ProfessorInputPage(this, professorToEdit);
+        //    MainFrame.Navigate(_professorInputPage);
+        //}
 
         // 강의실 입력 페이지로 이동
         public void NavigateToClassroomInputPage()
@@ -99,7 +99,7 @@ namespace ClassTimetableMaker
             MainFrame.Navigate(_classroomInputPage);
         }
 
-        // 교과목 입력 페이지로 이동
+        // 교과목 입력 페이지로 이동 (새 교과목 추가)
         public void NavigateToSubjectInputPage()
         {
             _subjectInputPage = new SubjectInputPage(this);
@@ -113,29 +113,7 @@ namespace ClassTimetableMaker
             MainFrame.Navigate(_subjectInputPage);
         }
 
-        // 기존 메서드들
-        public void NavigateToInputPage()
-        {
-            MainFrame.Navigate(_inputPage);
-        }
-
-        public void NavigateToMainPage()
-        {
-            MainFrame.Navigate(_page1);
-        }
-
-        public void NavigateToQueryPage()
-        {
-            _queryPage = new QueryPage(this);
-            MainFrame.Navigate(_queryPage);
-        }
-
-        // 입력 페이지로 이동
-        public void NavigateToInputPage()
-        {
-            MainFrame.Navigate(_inputPage);
-        }
-
+        // 메인 시간표 페이지로 이동
         public void NavigateToMainPage()
         {
             MainFrame.Navigate(_page1);

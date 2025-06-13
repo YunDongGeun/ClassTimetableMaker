@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassTimetableMaker.Model;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace ClassTimetableMaker.Views
 {
     public partial class QueryPage : Page
     {
-        private readonly DBManager _dbManager;
+        private readonly SQLiteDBManager _dbManager;
         private readonly MainWindow _mainWindow;
         private TimeTableBlock _selectedBlock;
 
@@ -27,15 +28,9 @@ namespace ClassTimetableMaker.Views
             InitializeComponent();
             _mainWindow = mainWindow;
 
-            // App.config에서 DB 설정 불러오기
-            string server = ConfigurationManager.AppSettings["DbServer"] ?? "localhost";
-            int port = int.Parse(ConfigurationManager.AppSettings["DbPort"] ?? "3306");
-            string database = ConfigurationManager.AppSettings["DbName"] ?? "class_time_table_maker";
-            string username = ConfigurationManager.AppSettings["DbUser"] ?? "root";
-            string password = ConfigurationManager.AppSettings["DbPassword"];
-
-            // DB 매니저 초기화
-            _dbManager = new DBManager(server, port, database, username, password);
+            // SQLite DB 매니저 초기화
+            string databasePath = ConfigurationManager.AppSettings["DatabasePath"];
+            _dbManager = new SQLiteDBManager(databasePath);
 
             // 창이 열릴 때 모든 데이터 로드
             LoadAllTimeTableBlocks();
@@ -81,12 +76,6 @@ namespace ClassTimetableMaker.Views
             {
                 MessageBox.Show($"검색 중 오류가 발생했습니다: {ex.Message}", "검색 오류", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        // 입력 화면으로 버튼 클릭 이벤트
-        private void btnInput_Click(object sender, RoutedEventArgs e)
-        {
-            _mainWindow.NavigateToInputPage();
         }
 
         // 세부 정보 버튼 클릭 이벤트
@@ -162,6 +151,11 @@ namespace ClassTimetableMaker.Views
             // 세부 정보 영역 표시, 데이터 그리드 숨김
             borderDetails.Visibility = Visibility.Visible;
             dgTimeTableBlocks.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnInput_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.NavigateToSubjectInputPage();
         }
     }
 }

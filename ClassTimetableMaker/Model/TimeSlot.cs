@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassTimetableMaker
+namespace ClassTimetableMaker.Model
 {
     public class TimeSlot
     {

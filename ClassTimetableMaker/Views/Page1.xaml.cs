@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassTimetableMaker.Model;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace ClassTimetableMaker.Views
     public partial class Page1 : Page
     {
         private readonly MainWindow _mainWindow;
-        private readonly DBManager _dbManager;
+        private readonly SQLiteDBManager _dbManager;
 
         // 동적 시간표 관리를 위한 새로운 데이터 구조
         private Dictionary<string, List<LectureInstance>> timeSlotLectures = new(); // "period,day" -> 강의 인스턴스 리스트
@@ -1375,11 +1376,9 @@ namespace ClassTimetableMaker.Views
             }
         }
 
-        // 과목 추가 버튼 클릭 이벤트
         private void AddLectureButton_Click(object sender, RoutedEventArgs e)
         {
-            // InputPage로 이동하거나 새 강의 추가 다이얼로그 표시
-            _mainWindow.NavigateToInputPage();
+            _mainWindow.NavigateToSubjectInputPage();
         }
     }
 

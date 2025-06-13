@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using ClassTimetableMaker.Models;
+using ClassTimetableMaker.Model;
 
 namespace ClassTimetableMaker
 {
@@ -45,11 +46,10 @@ namespace ClassTimetableMaker
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 );
 
-                -- 2. 강의실 테이블
+                -- 2. 강의실 테이블 (간단 버전)
                 CREATE TABLE IF NOT EXISTS classrooms (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE,
-                    capacity INTEGER,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 );
@@ -218,92 +218,6 @@ namespace ClassTimetableMaker
             }
         }
 
-        // 교수 삭제
-        public async Task<bool> DeleteProfessorAsync(int id)
-        {
-            try
-            {
-                using var connection = new SQLiteConnection(_connectionString);
-                await connection.OpenAsync();
-
-                // 먼저 해당 교수가 담당하는 교과목이 있는지 확인
-                string checkSql = "SELECT COUNT(*) FROM subject_professors WHERE professor_id = @id";
-                using var checkCommand = new SQLiteCommand(checkSql, connection);
-                checkCommand.Parameters.AddWithValue("@id", id);
-
-                int subjectCount = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
-                if (subjectCount > 0)
-                {
-                    throw new InvalidOperationException("해당 교수님이 담당하는 교과목이 있어서 삭제할 수 없습니다. 먼저 교과목에서 교수 배정을 해제해주세요.");
-                }
-
-                // 교수 삭제
-                string deleteSql = "DELETE FROM professors WHERE id = @id";
-                using var deleteCommand = new SQLiteCommand(deleteSql, connection);
-                deleteCommand.Parameters.AddWithValue("@id", id);
-
-                int result = await deleteCommand.ExecuteNonQueryAsync();
-                return result > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DB 오류: {ex.Message}");
-                throw;
-            }
-        }
-
-        // 교수명으로 검색
-        public async Task<List<Professor>> GetProfessorsByNameAsync(string name)
-        {
-            var professors = new List<Professor>();
-
-            using var connection = new SQLiteConnection(_connectionString);
-            await connection.OpenAsync();
-
-            string sql = "SELECT * FROM professors WHERE name LIKE @name ORDER BY name";
-            using var command = new SQLiteCommand(sql, connection);
-            command.Parameters.AddWithValue("@name", $"%{name}%");
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                professors.Add(new Professor
-                {
-                    Id = reader.GetInt32("id"),
-                    Name = reader.GetString("name"),
-                    PreferredTimeSlots = reader.IsDBNull("preferred_time_slots") ? null : reader.GetString("preferred_time_slots"),
-                    UnavailableTimeSlots = reader.IsDBNull("unavailable_time_slots") ? null : reader.GetString("unavailable_time_slots"),
-                    CreatedAt = reader.GetDateTime("created_at"),
-                    UpdatedAt = reader.GetDateTime("updated_at")
-                });
-            }
-
-            return professors;
-        }
-
-        // 교수 중복 체크
-        public async Task<bool> IsProfessorNameExistsAsync(string name, int? excludeId = null)
-        {
-            using var connection = new SQLiteConnection(_connectionString);
-            await connection.OpenAsync();
-
-            string sql = "SELECT COUNT(*) FROM professors WHERE name = @name";
-            if (excludeId.HasValue)
-            {
-                sql += " AND id != @excludeId";
-            }
-
-            using var command = new SQLiteCommand(sql, connection);
-            command.Parameters.AddWithValue("@name", name);
-            if (excludeId.HasValue)
-            {
-                command.Parameters.AddWithValue("@excludeId", excludeId.Value);
-            }
-
-            int count = Convert.ToInt32(await command.ExecuteScalarAsync());
-            return count > 0;
-        }
-
         // ========================================
         // 강의실 관련 메서드
         // ========================================
@@ -325,7 +239,6 @@ namespace ClassTimetableMaker
                 {
                     Id = reader.GetInt32("id"),
                     Name = reader.GetString("name"),
-                    Capacity = reader.IsDBNull("capacity") ? null : reader.GetInt32("capacity"),
                     CreatedAt = reader.GetDateTime("created_at"),
                     UpdatedAt = reader.GetDateTime("updated_at")
                 });
@@ -342,12 +255,11 @@ namespace ClassTimetableMaker
                 await connection.OpenAsync();
 
                 string sql = @"
-                    INSERT INTO classrooms (name, capacity)
-                    VALUES (@name, @capacity)";
+                    INSERT INTO classrooms (name)
+                    VALUES (@name)";
 
                 using var command = new SQLiteCommand(sql, connection);
                 command.Parameters.AddWithValue("@name", classroom.Name);
-                command.Parameters.AddWithValue("@capacity", classroom.Capacity ?? (object)DBNull.Value);
 
                 int result = await command.ExecuteNonQueryAsync();
                 return result > 0;
@@ -375,7 +287,7 @@ namespace ClassTimetableMaker
                 FROM subjects s
                 LEFT JOIN subject_professors sp ON s.id = sp.subject_id
                 LEFT JOIN professors p ON sp.professor_id = p.id
-                ORDER BY s.grade, s.name";
+                ORDER BY s.grade, s.name, sp.is_primary DESC";
 
             using var command = new SQLiteCommand(sql, connection);
             using var reader = await command.ExecuteReaderAsync();
@@ -591,7 +503,7 @@ namespace ClassTimetableMaker
                     LectureHours_1 = subject.LectureHours1,
                     LectureHours_2 = subject.LectureHours2,
                     SectionCount = subject.SectionCount,
-                    Duration = subject.ContinuousHours,
+                    Duration = subject.IsContinuous ? subject.ContinuousHours : Math.Max(subject.LectureHours1, subject.LectureHours2),
                     DisplayName = subject.Name
                 };
 
@@ -665,6 +577,70 @@ namespace ClassTimetableMaker
 
                 int result = await command.ExecuteNonQueryAsync();
                 return result > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+
+        public async Task<bool> IsProfessorNameExistsAsync(string name)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                string sql = "SELECT COUNT(*) FROM professors WHERE name = @name";
+                using var command = new SQLiteCommand(sql, connection);
+                command.Parameters.AddWithValue("@name", name);
+
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result) > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<bool> IsClassroomNameExistsAsync(string name)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                string sql = "SELECT COUNT(*) FROM classrooms WHERE name = @name";
+                using var command = new SQLiteCommand(sql, connection);
+                command.Parameters.AddWithValue("@name", name);
+
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result) > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 오류: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<bool> IsSubjectNameExistsAsync(string name)
+        {
+            try
+            {
+                using var connection = new SQLiteConnection(_connectionString);
+                await connection.OpenAsync();
+
+                string sql = "SELECT COUNT(*) FROM subjects WHERE name = @name";
+                using var command = new SQLiteCommand(sql, connection);
+                command.Parameters.AddWithValue("@name", name);
+
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(result) > 0;
             }
             catch (Exception ex)
             {

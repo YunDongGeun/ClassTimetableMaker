@@ -203,41 +203,6 @@
                                         </ComboBox>
                                     </StackPanel>
                                 </StackPanel>
-
-
-                                <StackPanel x:Name="spAdditionalSlots" Visibility="Collapsed">
-                                    <!-- 추가 업무 시간 1 -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                        <ComboBox x:Name="cbAdditionalSlot1Day" Width="60" Height="25" FontSize="10" Margin="0,0,5,0">
-                                            <ComboBoxItem Content="월요일"/>
-                                            <ComboBoxItem Content="화요일"/>
-                                            <ComboBoxItem Content="수요일"/>
-                                            <ComboBoxItem Content="목요일"/>
-                                            <ComboBoxItem Content="금요일"/>
-                                        </ComboBox>
-                                        <ComboBox x:Name="cbAdditionalSlot1Time" Width="70" Height="25" FontSize="10">
-                                            <ComboBoxItem Content="오전"/>
-                                            <ComboBoxItem Content="오후"/>
-                                            <ComboBoxItem Content="전체"/>
-                                        </ComboBox>
-                                    </StackPanel>
-
-                                    <!-- 추가 업무 시간 2 -->
-                                    <StackPanel Orientation="Horizontal">
-                                        <ComboBox x:Name="cbAdditionalSlot2Day" Width="60" Height="25" FontSize="10" Margin="0,0,5,0">
-                                            <ComboBoxItem Content="월요일"/>
-                                            <ComboBoxItem Content="화요일"/>
-                                            <ComboBoxItem Content="수요일"/>
-                                            <ComboBoxItem Content="목요일"/>
-                                            <ComboBoxItem Content="금요일"/>
-                                        </ComboBox>
-                                        <ComboBox x:Name="cbAdditionalSlot2Time" Width="70" Height="25" FontSize="10">
-                                            <ComboBoxItem Content="오전"/>
-                                            <ComboBoxItem Content="오후"/>
-                                            <ComboBoxItem Content="전체"/>
-                                        </ComboBox>
-                                    </StackPanel>
-                                </StackPanel>
                             </StackPanel>
                         </GroupBox>
 

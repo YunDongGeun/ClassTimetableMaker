@@ -5,7 +5,7 @@ using System.Configuration;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using ClassTimetableMaker.Models;
+using ClassTimetableMaker.Model;
 
 namespace ClassTimetableMaker.Views
 {
@@ -59,23 +59,6 @@ namespace ClassTimetableMaker.Views
                 spTimeBasedUnavailable.Visibility = Visibility.Collapsed;
                 spPeriodBasedUnavailable.Visibility = Visibility.Visible;
             }
-        }
-
-        // 추가 업무 제약 체크박스 이벤트
-        private void chkAdditionalRestrictions_Checked(object sender, RoutedEventArgs e)
-        {
-            spAdditionalSlots.Visibility = Visibility.Visible;
-        }
-
-        private void chkAdditionalRestrictions_Unchecked(object sender, RoutedEventArgs e)
-        {
-            spAdditionalSlots.Visibility = Visibility.Collapsed;
-
-            // 추가 슬롯 초기화
-            cbAdditionalSlot1Day.SelectedIndex = -1;
-            cbAdditionalSlot1Time.SelectedIndex = -1;
-            cbAdditionalSlot2Day.SelectedIndex = -1;
-            cbAdditionalSlot2Time.SelectedIndex = -1;
         }
 
         // 교수 추가 버튼 클릭
@@ -361,7 +344,6 @@ namespace ClassTimetableMaker.Views
 
             var slots = unavailableSlots.Split(',', StringSplitOptions.RemoveEmptyEntries);
             int slotIndex = 0;
-            int additionalSlotIndex = 0;
 
             foreach (var slot in slots.Take(4))
             {
@@ -375,13 +357,6 @@ namespace ClassTimetableMaker.Views
                     {
                         LoadTimeBasedSlot(trimmedSlot, slotIndex);
                         slotIndex++;
-                    }
-                    else if (additionalSlotIndex < 2)
-                    {
-                        chkAdditionalRestrictions.IsChecked = true;
-                        spAdditionalSlots.Visibility = Visibility.Visible;
-                        LoadAdditionalTimeSlot(trimmedSlot, additionalSlotIndex);
-                        additionalSlotIndex++;
                     }
                 }
                 else if (trimmedSlot.Contains("교시"))
@@ -413,27 +388,6 @@ namespace ClassTimetableMaker.Views
                 {
                     SetComboBoxValue(cbSlot2Day, day);
                     SetComboBoxValue(cbSlot2Time, time);
-                }
-            }
-        }
-
-        private void LoadAdditionalTimeSlot(string slot, int index)
-        {
-            var parts = slot.Split(' ');
-            if (parts.Length >= 2)
-            {
-                string day = parts[0];
-                string time = parts[1];
-
-                if (index == 0)
-                {
-                    SetComboBoxValue(cbAdditionalSlot1Day, day);
-                    SetComboBoxValue(cbAdditionalSlot1Time, time);
-                }
-                else if (index == 1)
-                {
-                    SetComboBoxValue(cbAdditionalSlot2Day, day);
-                    SetComboBoxValue(cbAdditionalSlot2Time, time);
                 }
             }
         }
@@ -516,15 +470,6 @@ namespace ClassTimetableMaker.Views
 
                 var slot2 = GetTimeBasedSlot(cbSlot2Day, cbSlot2Time);
                 if (!string.IsNullOrEmpty(slot2)) unavailableSlots.Add(slot2);
-
-                if (chkAdditionalRestrictions.IsChecked == true)
-                {
-                    var additionalSlot1 = GetTimeBasedSlot(cbAdditionalSlot1Day, cbAdditionalSlot1Time);
-                    if (!string.IsNullOrEmpty(additionalSlot1)) unavailableSlots.Add(additionalSlot1);
-
-                    var additionalSlot2 = GetTimeBasedSlot(cbAdditionalSlot2Day, cbAdditionalSlot2Time);
-                    if (!string.IsNullOrEmpty(additionalSlot2)) unavailableSlots.Add(additionalSlot2);
-                }
             }
             else if (rbUnavailableByPeriod.IsChecked == true)
             {
@@ -662,14 +607,6 @@ namespace ClassTimetableMaker.Views
             cbPeriodSlot2Day.SelectedIndex = -1;
             cbPeriodSlot2Start.SelectedIndex = -1;
             cbPeriodSlot2End.SelectedIndex = -1;
-
-            // 추가 업무 제약 초기화
-            chkAdditionalRestrictions.IsChecked = false;
-            spAdditionalSlots.Visibility = Visibility.Collapsed;
-            cbAdditionalSlot1Day.SelectedIndex = -1;
-            cbAdditionalSlot1Time.SelectedIndex = -1;
-            cbAdditionalSlot2Day.SelectedIndex = -1;
-            cbAdditionalSlot2Time.SelectedIndex = -1;
 
             // UI 상태 초기화
             spTimeBasedUnavailable.Visibility = Visibility.Visible;
